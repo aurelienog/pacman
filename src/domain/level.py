@@ -16,3 +16,5 @@ class Level:
 
 
 timer_remaining
+
+LOGICA DEL GIRO

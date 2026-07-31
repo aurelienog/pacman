@@ -14,6 +14,5 @@ class GhostState(Enum):
 class Ghost(Entity, GhostAI):
     ai: GhostAI
 
-estados frightened/chase
-
-
+    def choose_next_direction(self, maze):
+        return self.ai.choose_direction(self, maze)
