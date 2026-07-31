@@ -1,0 +1,42 @@
+# ==============================================================================
+# Pac-Man Game Configuration File
+# 42 School Project Specifications
+# ==============================================================================
+{
+  # Output path/filename for persistent top 10 scores
+  "highscore_filename": "highscores.json",
+
+  # Game Entities & Rules Configuration
+  "lives": 3,
+  "points_per_pacgum": 10,
+  "points_per_super_pacgum": 50,
+  "points_per_ghost": 200,
+
+  # Multilevel Configuration Array
+  "levels": [
+    {
+      "level_number": 1,
+      "width": 21,
+      "height": 21,
+      "pacgum": 42,
+      "seed": 42,
+      "level_max_time": 90
+    },
+    {
+      "level_number": 2,
+      "width": 25,
+      "height": 25,
+      "pacgum": 60,
+      "seed": 101,
+      "level_max_time": 90
+    },
+    {
+      "level_number": 3,
+      "width": 29,
+      "height": 29,
+      "pacgum": 80,
+      "seed": 2024,
+      "level_max_time": 90
+    }
+  ]
+}
