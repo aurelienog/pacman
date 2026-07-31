@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
-from ..entities import GhostState
+from .entities import GhostState
 
 class GhostAI(ABC):
 

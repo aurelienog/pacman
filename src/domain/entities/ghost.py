@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 
 from .entity import Entity
-from ..behaviours.ghost_ai import GhostAI
+from ..ghost_ai import GhostAI
 
 
 class GhostState(Enum):
