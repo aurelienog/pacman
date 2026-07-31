@@ -1,0 +1,1 @@
+# Puntuaciones, vidas y respawn
