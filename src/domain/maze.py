@@ -6,7 +6,8 @@ class Maze:
     def is_walkable(self, transform: Transform) -> bool:
         ...
 
-    def can_move(self, entity: Entity, direction: Direction) -> bool:
-        ...
+    tile_at()
 
-    
+    load()
+
+    draw_data()

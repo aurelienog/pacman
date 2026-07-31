@@ -1,13 +1,20 @@
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
+from .. import GridPosition
+
+
+@dataclass
+class CollectResult:
+    score: int
+    frightened_mode: bool = False
 
 
 @dataclass
 class Item(ABC):
-    position:
+    position: GridPosition
     value: int
-    eaten: bool
+    eaten: bool = False
 
     @abstractmethod
-    def on_collect(player, game):
+    def collect(self) -> CollectResult:
         ...

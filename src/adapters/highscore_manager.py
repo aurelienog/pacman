@@ -1,3 +1,12 @@
+ScoreRegistry
+        │
+        ▼
+HighscoreManager
+        │
+        ▼
+highscores.json
+
+
 load()
 
 save()

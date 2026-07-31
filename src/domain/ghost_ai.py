@@ -1,11 +1,10 @@
-from dataclasses import dataclass
-from abc import ABC, abstractmethod
+from abc import ABC
 
 from .entities import GhostState
 
 class GhostAI(ABC):
 
-    def next_move(self, ghost, level):
+    def choose_direction(self, ghost, level):
         if ghost.state == GhostState.CHASE:
             return self._chase(ghost, level)
 
