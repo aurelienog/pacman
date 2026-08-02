@@ -25,3 +25,9 @@ pacman/
         ├── renderer.py        # Graphics rendering (MLX / Pygame)
         └── screens.py         # Navigation menus, HUD, and dialogs
 ```
+
+
+Transform → gestiona posiciones y operaciones geométricas.
+Entity → mantiene el estado del movimiento (speed, direction, next_direction).
+Maze → decide si una casilla es transitable.
+Level → coordina el flujo del juego (movimiento, giros, colisiones, IA, recogida de objetos...).
