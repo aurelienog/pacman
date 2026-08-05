@@ -1,0 +1,130 @@
+"""Update routines for the game simulation."""
+
+from __future__ import annotations
+
+from .contracts import GamePhase
+from .movement import move_player, move_ghosts
+from .collisions import lose_life
+from .game_session import GameSession
+from ..domain import GhostMode
+
+
+def update_world(session: "GameSession", delta_seconds: float) -> None:
+    """Advance the game simulation.
+
+    Args:
+        session: Current game session.
+        delta_seconds: Elapsed real time since the previous update.
+
+    Returns:
+        None.
+    """
+    if (
+        session.phase is not GamePhase.PLAYING
+        or session.maze is None
+        or session.player is None
+    ):
+        return
+
+    delta = min(max(delta_seconds, 0.0), session.MAX_DELTA_SECONDS)
+
+    _update_timer(session, delta)
+
+    if session.phase is not GamePhase.PLAYING:
+        return
+
+    _update_frightened(session, delta)
+    _update_player(session, delta)
+    _update_ghosts(session, delta)
+
+
+def _update_timer(session, delta: float) -> None:
+    """Update the remaining level time.
+
+    Args:
+        session: Current game session.
+        delta: Time elapsed since the previous update.
+
+    Returns:
+        None.
+    """
+    if not session.freeze_timer:
+        session.seconds_remaining -= delta
+
+    if session.seconds_remaining <= 0:
+        lose_life("Time is up!")
+
+
+def _update_frightened(session, delta: float) -> None:
+    """Update frightened mode timers.
+
+    Args:
+        session: Current game session.
+        delta: Time elapsed since the previous update.
+
+    Returns:
+        None.
+    """
+    session._frightened_remaining = max(
+        0.0,
+        session._frightened_remaining - delta,
+    )
+
+    if session._frightened_remaining > 0:
+        return
+
+    for ghost in session.ghosts:
+        if ghost.mode is GhostMode.FRIGHTENED:
+            ghost.mode = GhostMode.CHASE
+
+
+def _update_player(session, delta: float) -> None:
+    """Advance the player according to the elapsed time.
+
+    Args:
+        session: Current game session.
+        delta: Time elapsed since the previous update.
+
+    Returns:
+        None.
+    """
+    player_step = player_step_seconds(session)
+
+    session._player_elapsed += delta
+
+    while (
+        session._player_elapsed >= player_step
+        and session.phase is GamePhase.PLAYING
+    ):
+        session._player_elapsed -= player_step
+        move_player(session)
+
+
+def _update_ghosts(session, delta: float) -> None:
+    """Advance all ghosts according to the elapsed time.
+
+    Args:
+        session: Current game session.
+        delta: Time elapsed since the previous update.
+
+    Returns:
+        None.
+    """
+    session._ghost_elapsed += delta
+
+    while (
+        session._ghost_elapsed >= session.GHOST_STEP_SECONDS
+        and session.phase is GamePhase.PLAYING
+    ):
+        session._ghost_elapsed -= session.GHOST_STEP_SECONDS
+
+        if not session.freeze_ghosts:
+            move_ghosts(session)
+
+def player_step_seconds(session: "GameSession") -> float:
+    """Return the current player movement interval."""
+
+    if session.speed_boost:
+        return session.BASE_PLAYER_STEP_SECONDS / 2
+
+    return session.BASE_PLAYER_STEP_SECONDS
