@@ -16,13 +16,13 @@ gantt
     axisFormat  %W / %d-%b
 
     section 1. Setup & Architecture
-    Specs, Git/Makefile & Docs setup                :des1, 2026-08-01, 6d
-    Architecture design (MVC)                       :des2, 2026-08-03, 7d
+    Specs, Git/Makefile & Docs setup                :des1, 2026-08-01, 2d
+    Architecture design (MVC)                       :des2, 2026-08-02, 7d
 
     section 2. Core & Adapters
-    Configuration Parser (JSON + comments)          :core1, 2026-08-06, 6d
-    A-Maze-ing Adapter integration                  :core2, 2026-08-08, 7d
-    Highscore Manager & JSON persistence            :core3, 2026-08-11, 6d
+    Configuration Parser (JSON + comments)          :core1, 2026-08-02, 2d
+    A-Maze-ing Adapter integration                  :core2, 2026-08-02, 1d
+    Highscore Manager & JSON persistence            :core3, 2026-08-02, 1d
 
     section 3. Game Logic & Domain
     Maze engine & entities (Player, Items)          :dom1, 2026-08-12, 8d
@@ -43,7 +43,7 @@ gantt
 
 | Week | Planned Goals | Actual Delivered | Status / Variances |
 | :--- | :--- | :--- | :--- |
-| **Week 1** | Config & MazeAdapter | Config & MazeAdapter complete | On track |
+| **Week 1** | Config & MazeAdapter | Config, Highscore persistence & MazeAdapter complete | -1 day variance  |
 | **Week 2** | Domain Logic & Ghost AI | Ghost AI took +5 hours due to edge cases | +1 day variance (Mitigated in W3) |
 | **Week 3** | UI Screens & Highscore | Menus & Highscore integrated | On track |
 | **Week 4** | QA, Packaging & Docs | Packaging script & strict linting done | Finalized |
