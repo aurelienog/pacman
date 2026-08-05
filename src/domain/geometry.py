@@ -1,10 +1,10 @@
-from enum import Enum
 from dataclasses import dataclass
-
-TILE_SIZE = 24 #cell size
+from enum import Enum
 
 
 class Direction(Enum):
+    """A cardinal movement direction in maze coordinates."""
+
     UP = (0, -1)
     DOWN = (0, 1)
     LEFT = (-1, 0)
@@ -13,59 +13,29 @@ class Direction(Enum):
 
     @property
     def delta(self) -> tuple[int, int]:
+        """Return the coordinate delta for this direction."""
         return self.value
 
+    @property
+    def opposite(self) -> "Direction":
+        """Return the reverse direction."""
+        return {
+            Direction.UP: Direction.DOWN,
+            Direction.DOWN: Direction.UP,
+            Direction.LEFT: Direction.RIGHT,
+            Direction.RIGHT: Direction.LEFT,
+            Direction.NONE: Direction.NONE,
+        }[self]
 
-@dataclass(slots=True)
-class GridPosition:
+
+@dataclass(frozen=True, slots=True)
+class Position:
+    """An immutable cell coordinate."""
+
     x: int
     y: int
 
-
-@dataclass(slots=True)
-class PixelPosition:
-    x: float
-    y: float
-
-
-@dataclass
-class Transform:
-    grid: GridPosition
-    pixel: PixelPosition
-
-    def next_cell_center(self, direction: Direction, tile_size: int) -> PixelPosition:
-            dx, dy = direction.delta
-
-            return PixelPosition(
-                (self.grid.x + dx) * tile_size,
-                (self.grid.y + dy) * tile_size,
-            )
-    
-    def reached_cell_center(self, direction: Direction, tile_size: int) -> bool:
-        target = self.next_cell_center(direction, tile_size)
-
+    def moved(self, direction: Direction) -> "Position":
+        """Return the adjacent position in ``direction``."""
         dx, dy = direction.delta
-
-        if dx > 0:
-            return self.pixel.x >= target.x
-
-        if dx < 0:
-            return self.pixel.x <= target.x
-
-        if dy > 0:
-            return self.pixel.y >= target.y
-
-        if dy < 0:
-            return self.pixel.y <= target.y
-
-        return False
-
-    def advance(self, direction: Direction, tile_size: int) -> None:
-        dx, dy = direction.delta
-
-        self.grid.x += dx
-        self.grid.y += dy
-
-        self.pixel.x = self.grid.x * tile_size
-        self.pixel.y = self.grid.y * tile_size
-
+        return Position(self.x + dx, self.y + dy)
