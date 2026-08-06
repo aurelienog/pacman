@@ -5,7 +5,7 @@ import json
 import logging
 import re
 
-from ..domain.config import Defaults, Limits, LevelConfig, GameConfig
+from ..domain import Defaults, Limits, LevelConfig, GameConfig
 
 LOGGER = logging.getLogger(__name__)
 
