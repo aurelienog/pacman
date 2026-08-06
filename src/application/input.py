@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .game_session import GameSession
+
 from .contracts import GamePhase, InputAction
 from .level_loader import start_new_game, complete_level
-from .game_session import GameSession
 from ..domain import Direction
 
 

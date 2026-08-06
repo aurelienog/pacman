@@ -1,15 +1,16 @@
 """Level creation and initialization."""
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .game_session import GameSession
 
-from __future__ import annotations
-
 from .item_placement import place_items
 from .pathfinding import nearest_walkable
 from ..domain import Ghost, Player, Position
 from .contracts import GamePhase
+
 
 def start_new_game(session: "GameSession") -> None:
     """Initialize a new game.

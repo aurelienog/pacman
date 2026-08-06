@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from .game_session import GameSession
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .game_session import GameSession
+
 from .contracts import GamePhase
 from ..domain import Direction, GhostMode
 

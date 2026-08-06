@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .game_session import GameSession
+
 from .contracts import GamePhase
 from .movement import move_player, move_ghosts
 from .collisions import lose_life
-from .game_session import GameSession
 from ..domain import GhostMode
 
 
