@@ -1,4 +1,4 @@
-"""Pygame-only loader for the generated neon sprite atlas."""
+"""Pygame loader for sprite atlas."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ ATLAS_PATH = Path(__file__).resolve().parents[2] / "assets" / "neon_sprite_atlas
 
 
 class NeonSpriteAtlas:
-    """Slice and draw the generated 4-by-2 atlas without exposing it to game rules."""
+    """Slice and draw sprite atlas without exposing it to game rules."""
 
     def __init__(self, pygame: Any) -> None:
         image = pygame.image.load(str(ATLAS_PATH)).convert_alpha()
@@ -31,7 +31,7 @@ class NeonSpriteAtlas:
 
     @staticmethod
     def available() -> bool:
-        """Whether the generated atlas exists beside the source code."""
+        """Whether the sprite atlas exists beside the source code."""
         return ATLAS_PATH.is_file()
 
     def draw_player(self, screen: Any, center: tuple[int, int], cell: int, direction: Direction) -> None:

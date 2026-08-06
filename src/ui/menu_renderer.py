@@ -8,8 +8,8 @@ from typing import Any
 from src.scores import ScoreRegistry
 from src.ui.draw_utils import (
     center_text,
-    draw_neon_button_box,
-    draw_neon_menu_card_frame,
+    draw_button_box,
+    draw_menu_card_frame,
 )
 
 BG_DIR = Path(__file__).resolve().parents[2] / "assets" / "backgrounds"
@@ -20,17 +20,9 @@ MENU_BG_PATH = BG_DIR / "background_menu.png"
 SCORES_BG_PATH = BG_DIR / "background_scores.png"
 INSTRUCTIONS_BG_PATH = BG_DIR / "background_instructions.png"
 
-LOGO_MAIN_PATH = LOGOS_DIR / "logo.png"
-LOGO_INSTRUCTIONS_PATH = LOGOS_DIR / "game_instructions_logo.png"
-LOGO_HIGHSCORES_PATH = LOGOS_DIR / "top10_highscores_logo.png"
-PACMAN_ICON_PATH = ICONS_DIR / "pacman_icon1.png"
-
-LOGO_HEIGHT_RATIO = 0.22
-LOGO_Y_RATIO = 0.15
-
 
 class MenuRenderer:
-    """Render non-gameplay menu overlays with dynamic scaling and interactive neon buttons."""
+    """Render non-gameplay menu overlays with dynamic scaling and interactive buttons."""
 
     def __init__(self, pygame: Any, score_registry: ScoreRegistry) -> None:
         self._pygame = pygame
@@ -60,7 +52,6 @@ class MenuRenderer:
         return None
 
     def _load_image_fallback(self, filename: str, alpha: bool = True) -> Any:
-        """Search for image across assets/ subdirectories safely."""
         possible = [
             LOGOS_DIR / filename,
             ICONS_DIR / filename,
@@ -92,12 +83,12 @@ class MenuRenderer:
 
     def _draw_logo(self, screen: Any, logo_img: Any = None, fallback_text: str = "PAC-MAN") -> int:
         sw, sh = screen.get_width(), screen.get_height()
-        center_y = int(sh * LOGO_Y_RATIO)
+        center_y = int(sh * 0.15)
         target_logo = logo_img if logo_img is not None else self._logo_main
 
         if target_logo is not None:
             aspect = target_logo.get_width() / target_logo.get_height()
-            target_h = int(sh * LOGO_HEIGHT_RATIO)
+            target_h = int(sh * 0.22)
             target_w = int(target_h * aspect)
 
             if target_w > int(sw * 0.85):
@@ -110,7 +101,7 @@ class MenuRenderer:
             return rect.bottom
 
         title_font = self._get_font(int(sh * 0.09))
-        rect = center_text(screen, title_font, fallback_text, (255, 230, 0), center_y, self._pygame)
+        rect = center_text(screen, title_font, fallback_text, (255, 230, 0), center_y)
         return rect.bottom
 
     def draw_main_menu(
@@ -143,8 +134,6 @@ class MenuRenderer:
         item_spacing = int(sh * 0.095)
 
         items = ("START GAME", "HIGHSCORES", "INSTRUCTIONS", "EXIT")
-
-        # For mouse interaction
         self.main_menu_rects.clear()
 
         for index, label in enumerate(items):
@@ -164,12 +153,12 @@ class MenuRenderer:
             self.main_menu_rects.append(hit_rect)
 
             if is_selected:
-                draw_neon_button_box(screen, hit_rect, self._pygame)
+                draw_button_box(screen, hit_rect, self._pygame)
 
             screen.blit(text_surf, text_rect)
 
     def draw_pause_menu(self, screen: Any, fonts: tuple[Any, Any, Any], pause_index: int) -> None:
-        """Draw responsive pause menu overlay matching PAUSE panel style."""
+        """Draw responsive pause menu overlay."""
         sw, sh = screen.get_width(), screen.get_height()
 
         card_w = min(int(sw * 0.45), 600)
@@ -178,17 +167,16 @@ class MenuRenderer:
         card_rect.center = (sw // 2, sh // 2)
 
         purple_color = (180, 50, 240)
-        draw_neon_menu_card_frame(screen, card_rect, purple_color, self._pygame, pacman_icon=self._pacman_icon)
+        draw_menu_card_frame(screen, card_rect, purple_color, self._pygame, pacman_icon=self._pacman_icon)
 
         title_font = self._get_font(int(card_h * 0.14))
-        center_text(screen, title_font, "PAUSED", (255, 100, 220), card_rect.top + int(card_h * 0.16), self._pygame)
+        center_text(screen, title_font, "PAUSED", (255, 100, 220), card_rect.top + int(card_h * 0.16))
 
         menu_font = self._get_font(int(card_h * 0.08))
         items = ("Resume", "Return to main menu", "Quit game")
         start_y = card_rect.top + int(card_h * 0.42)
         spacing = int(card_h * 0.16)
 
-        # For mouse interaction
         self.pause_menu_rects.clear()
 
         for index, label in enumerate(items):
@@ -208,12 +196,12 @@ class MenuRenderer:
             self.pause_menu_rects.append(hit_rect)
 
             if is_selected:
-                draw_neon_button_box(screen, hit_rect, self._pygame, color=purple_color)
+                draw_button_box(screen, hit_rect, self._pygame, color=purple_color)
 
             screen.blit(text_surf, text_rect)
 
     def _draw_highscores(self, screen: Any, top_y: int) -> None:
-        """Draw arcade leaderboard frame with larger text and pacman_icon1.png."""
+        """Draw leaderboard frame."""
         sw, sh = screen.get_width(), screen.get_height()
 
         card_w = min(int(sw * 0.7), 900)
@@ -221,10 +209,8 @@ class MenuRenderer:
         card_rect = self._pygame.Rect(0, 0, card_w, card_h)
         card_rect.center = (sw // 2, top_y + card_h // 2 + int(sh * 0.02))
 
-        # Frame with PNG Pac-Man icon at bottom
-        draw_neon_menu_card_frame(screen, card_rect, (45, 160, 255), self._pygame, pacman_icon=self._pacman_icon)
+        draw_menu_card_frame(screen, card_rect, (45, 160, 255), self._pygame, pacman_icon=self._pacman_icon)
 
-        # Column positions
         pad_x = int(card_w * 0.15)
         col_num_x = card_rect.left + pad_x
         col_name_x = card_rect.left + int(card_w * 0.25)
@@ -232,9 +218,8 @@ class MenuRenderer:
 
         header_y = card_rect.top + int(card_h * 0.08)
         header_font = self._get_font(int(card_h * 0.052))
-        row_font = self._get_font(int(card_h * 0.058))  # LARGER FONT for players & scores!
+        row_font = self._get_font(int(card_h * 0.058))
 
-        # Headers
         t_hash = header_font.render("#", True, (90, 210, 255))
         screen.blit(t_hash, (col_num_x, header_y))
 
@@ -244,7 +229,6 @@ class MenuRenderer:
         t_score_h = header_font.render("SCORE", True, (90, 210, 255))
         screen.blit(t_score_h, t_score_h.get_rect(topright=(col_score_x, header_y)))
 
-        # Header Separator
         header_sep_y = header_y + int(card_h * 0.06)
         self._pygame.draw.line(
             screen, (60, 120, 200),
@@ -252,7 +236,6 @@ class MenuRenderer:
             (card_rect.right - pad_x // 2, header_sep_y), 1
         )
 
-        # Rows #1 to #10
         scores = self._score_registry.scores
         rows_y = header_sep_y + int(card_h * 0.05)
         row_h = int((card_rect.bottom - rows_y - int(card_h * 0.08)) / 10)
@@ -267,7 +250,6 @@ class MenuRenderer:
 
             color = (255, 230, 0) if is_top else (220, 150, 255)
 
-            # Draw PNG Pac-Man Icon for #1
             if is_top and self._pacman_icon is not None:
                 icon_sz = max(18, int(row_h * 0.8))
                 scaled_icon = self._pygame.transform.smoothscale(self._pacman_icon, (icon_sz, icon_sz))
@@ -284,7 +266,6 @@ class MenuRenderer:
             s_rect = t_score.get_rect(topright=(col_score_x, cur_y))
             screen.blit(t_score, s_rect)
 
-            # Dotted Leader Lines
             dot_start_x = col_name_x + t_name.get_width() + 15
             dot_end_x = s_rect.left - 15
             dot_y = cur_y + t_name.get_height() // 2 + 1
@@ -303,7 +284,7 @@ class MenuRenderer:
                 )
 
         hint_font = self._get_font(int(card_h * 0.08))
-        center_text(screen, hint_font, "Enter / Esc to go back", (200, 200, 210), card_rect.bottom + int(sh * 0.05), self._pygame)
+        center_text(screen, hint_font, "Enter / Esc to go back", (200, 200, 210), card_rect.bottom + int(sh * 0.05))
 
     def _draw_instructions(self, screen: Any, top_y: int) -> None:
         sw, sh = screen.get_width(), screen.get_height()
@@ -318,7 +299,7 @@ class MenuRenderer:
 
         item_font = self._get_font(int(sh * 0.038))
         for index, line in enumerate(text):
-            center_text(screen, item_font, line, (230, 230, 235), start_y + index * spacing, self._pygame)
+            center_text(screen, item_font, line, (230, 230, 235), start_y + index * spacing)
 
         hint_font = self._get_font(int(sh * 0.048))
-        center_text(screen, hint_font, "Enter / Esc to go back", (200, 200, 210), int(sh * 0.90), self._pygame)
+        center_text(screen, hint_font, "Enter / Esc to go back", (200, 200, 210), int(sh * 0.90))
