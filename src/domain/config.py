@@ -30,8 +30,8 @@ class Limits:
     for configuration entries. Values outside these ranges are
     clamped by the configuration loader.
     """
-    WIDTH_RANGE = (15, 41)
-    HEIGHT_RANGE = (15, 41)
+    WIDTH_RANGE = (14, 41)
+    HEIGHT_RANGE = (14, 41)
 
     LIVES_RANGE = (1, 99)
 

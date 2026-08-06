@@ -3,16 +3,20 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+
+from .collisions import lose_life
+from .contracts import GamePhase
+from .movement import move_ghosts, move_player
+from ..domain import GhostMode
+
 if TYPE_CHECKING:
     from .game_session import GameSession
 
-from .contracts import GamePhase
-from .movement import move_player, move_ghosts
-from .collisions import lose_life
-from ..domain import GhostMode
 
-
-def update_world(session: "GameSession", delta_seconds: float) -> None:
+def update_world(
+    session: GameSession,
+    delta_seconds: float,
+) -> None:
     """Advance the game simulation.
 
     Args:
@@ -29,24 +33,30 @@ def update_world(session: "GameSession", delta_seconds: float) -> None:
     ):
         return
 
-    delta = min(max(delta_seconds, 0.0), session.MAX_DELTA_SECONDS)
+    delta = min(
+        max(delta_seconds, 0.0),
+        session.MAX_DELTA_SECONDS,
+    )
 
     _update_timer(session, delta)
 
     if session.phase is not GamePhase.PLAYING:
         return
 
-    _update_frightened(session, delta)
+    _update_ghost_states(session, delta)
     _update_player(session, delta)
     _update_ghosts(session, delta)
 
 
-def _update_timer(session, delta: float) -> None:
+def _update_timer(
+    session: GameSession,
+    delta: float,
+) -> None:
     """Update the remaining level time.
 
     Args:
         session: Current game session.
-        delta: Time elapsed since the previous update.
+        delta: Elapsed simulation time.
 
     Returns:
         None.
@@ -55,15 +65,18 @@ def _update_timer(session, delta: float) -> None:
         session.seconds_remaining -= delta
 
     if session.seconds_remaining <= 0:
-        lose_life("Time is up!")
+        lose_life(session, "Time is up!")
 
 
-def _update_frightened(session, delta: float) -> None:
-    """Update frightened mode timers.
+def _update_ghost_states(
+    session: GameSession,
+    delta: float,
+) -> None:
+    """Update frightened and respawning ghost states.
 
     Args:
         session: Current game session.
-        delta: Time elapsed since the previous update.
+        delta: Elapsed simulation time.
 
     Returns:
         None.
@@ -73,20 +86,32 @@ def _update_frightened(session, delta: float) -> None:
         session._frightened_remaining - delta,
     )
 
-    if session._frightened_remaining > 0:
-        return
+    if session._frightened_remaining == 0:
+        for ghost in session.ghosts:
+            if ghost.mode is GhostMode.FRIGHTENED:
+                ghost.mode = GhostMode.CHASE
 
     for ghost in session.ghosts:
-        if ghost.mode is GhostMode.FRIGHTENED:
+        if ghost.mode is not GhostMode.RESPAWNING:
+            continue
+
+        ghost.respawn_remaining -= delta
+
+        if ghost.respawn_remaining <= 0:
+            ghost.position = ghost.home
+            ghost.prev_position = ghost.home
             ghost.mode = GhostMode.CHASE
 
 
-def _update_player(session, delta: float) -> None:
-    """Advance the player according to the elapsed time.
+def _update_player(
+    session: GameSession,
+    delta: float,
+) -> None:
+    """Advance the player according to elapsed time.
 
     Args:
         session: Current game session.
-        delta: Time elapsed since the previous update.
+        delta: Elapsed simulation time.
 
     Returns:
         None.
@@ -103,12 +128,14 @@ def _update_player(session, delta: float) -> None:
         move_player(session)
 
 
-def _update_ghosts(session, delta: float) -> None:
-    """Advance all ghosts according to the elapsed time.
+def _update_ghosts(
+    session: GameSession,
+    delta
+) -> None:
+    """Advance all ghosts according to elapsed time.
 
     Args:
         session: Current game session.
-        delta: Time elapsed since the previous update.
 
     Returns:
         None.
@@ -124,9 +151,18 @@ def _update_ghosts(session, delta: float) -> None:
         if not session.freeze_ghosts:
             move_ghosts(session)
 
-def player_step_seconds(session: "GameSession") -> float:
-    """Return the current player movement interval."""
 
+def player_step_seconds(
+    session: GameSession,
+) -> float:
+    """Return the current player movement interval.
+
+    Args:
+        session: Current game session.
+
+    Returns:
+        Seconds between player movements.
+    """
     if session.speed_boost:
         return session.BASE_PLAYER_STEP_SECONDS / 2
 

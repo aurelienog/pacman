@@ -31,6 +31,8 @@ def handle_collisions(session: "GameSession") -> None:
 
         if ghost.mode is GhostMode.FRIGHTENED:
             session.score += session._config.points_per_ghost
+
+            ghost.prev_position = ghost.position
             ghost.mode = GhostMode.RESPAWNING
             ghost.respawn_remaining = session.GHOST_RESPAWN_SECONDS
 

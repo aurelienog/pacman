@@ -1,8 +1,15 @@
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, auto
 
 
 from .geometry import Position, Direction
+
+
+class GhostPersonality(Enum):
+    BLINKY = auto()
+    PINKY = auto()
+    INKY = auto()
+    CLYDE = auto()
 
 
 class GhostMode(Enum):
@@ -23,3 +30,4 @@ class Ghost:
     direction: Direction = Direction.NONE
     mode: GhostMode = GhostMode.CHASE
     respawn_remaining: float = 0.0
+    personality: GhostPersonality = GhostPersonality.BLINKY

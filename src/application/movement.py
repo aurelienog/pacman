@@ -5,8 +5,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from .collisions import handle_collisions
+from .ghost_ai import GhostAI
 from .level_loader import complete_level
-from .pathfinding import manhattan_distance
+from .pathfinding import find_next_move, random_walkable
 from ..domain import GhostMode, ItemKind
 
 if TYPE_CHECKING:
@@ -25,37 +26,38 @@ def move_player(session: GameSession) -> None:
     assert session.maze is not None
     assert session.player is not None
 
-    # ------------------------------------------------------------------
-    # Move player
-    # ------------------------------------------------------------------
-
     session.player.prev_position = session.player.position
 
     if session.maze.can_move(
         session.player.position,
         session.player.requested_direction,
     ):
-        session.player.direction = session.player.requested_direction
+        session.player.direction = (
+            session.player.requested_direction
+        )
 
     if session.maze.can_move(
         session.player.position,
         session.player.direction,
     ):
-        session.player.position = session.player.position.moved(
-            session.player.direction,
+        session.player.position = (
+            session.player.position.moved(
+                session.player.direction,
+            )
         )
 
-    # ------------------------------------------------------------------
-    # Collect item
-    # ------------------------------------------------------------------
-
-    item = session.items.pop(session.player.position, None)
+    item = session.items.pop(
+        session.player.position,
+        None,
+    )
 
     if item is not None:
         session.score += item.points
 
         if item.kind is ItemKind.SUPER_PACGUM:
-            session._frightened_remaining = session.FRIGHTENED_DURATION_SECONDS
+            session._frightened_remaining = (
+                session.FRIGHTENED_DURATION_SECONDS
+            )
 
             for ghost in session.ghosts:
                 if ghost.mode is GhostMode.CHASE:
@@ -65,15 +67,11 @@ def move_player(session: GameSession) -> None:
             complete_level(session)
             return
 
-    # ------------------------------------------------------------------
-    # Resolve collisions
-    # ------------------------------------------------------------------
-
     handle_collisions(session)
 
 
 def move_ghosts(session: GameSession) -> None:
-    """Move all ghosts by one step.
+    """Move every ghost one simulation step.
 
     Args:
         session: Active game session.
@@ -86,65 +84,38 @@ def move_ghosts(session: GameSession) -> None:
 
     for ghost in session.ghosts:
 
+        if ghost.mode is GhostMode.RESPAWNING:
+            continue
+
         ghost.prev_position = ghost.position
 
-        # --------------------------------------------------------------
-        # Respawning ghosts
-        # --------------------------------------------------------------
+        if ghost.mode is GhostMode.FRIGHTENED:
+            random_target = random_walkable(
+                session.maze,
+                session._random,
+            )
 
-        if ghost.mode is GhostMode.RESPAWNING:
-            ghost.respawn_remaining -= session.GHOST_STEP_SECONDS
-
-            if ghost.respawn_remaining <= 0:
-                ghost.position = ghost.home
-                ghost.prev_position = ghost.home
-                ghost.mode = GhostMode.CHASE
-
-            continue
-
-        # --------------------------------------------------------------
-        # Choose target
-        # --------------------------------------------------------------
-
-        target = (
-            ghost.home
-            if ghost.mode is GhostMode.FRIGHTENED
-            else session.player.position
-        )
-
-        # --------------------------------------------------------------
-        # Choose movement
-        # --------------------------------------------------------------
-
-        moves = session.maze.neighbours(ghost.position)
-
-        non_reverse = [
-            (direction, position)
-            for direction, position in moves
-            if direction is not ghost.direction.opposite
-        ]
-
-        choices = non_reverse or moves
-
-        if not choices:
-            continue
-
-        selector = (
-            max
-            if ghost.mode is GhostMode.FRIGHTENED
-            else min
-        )
-
-        ghost.direction, ghost.position = selector(
-            choices,
-            key=lambda move: manhattan_distance(
-                move[1],
+            next_move = find_next_move(
+                ghost,
+                random_target,
+                session.maze,
+            )
+        else:
+            target = GhostAI.target(
+                ghost,
+                session.player,
+                session.ghosts,
+                session.maze,
+            )
+            next_move = find_next_move(
+                ghost,
                 target,
-            ),
-        )
+                session.maze,
+            )
 
-    # ------------------------------------------------------------------
-    # Resolve collisions
-    # ------------------------------------------------------------------
+        if next_move is None:
+            continue
+
+        ghost.direction, ghost.position = next_move
 
     handle_collisions(session)

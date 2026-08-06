@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 from .item_placement import place_items
 from .pathfinding import nearest_walkable
-from ..domain import Ghost, Player, Position
+from ..domain import Ghost, Player, Position, GhostPersonality
 from .contracts import GamePhase
 
 
@@ -86,14 +86,7 @@ def load_level(session: "GameSession", lives: int) -> None:
         prev_position=player_spawn,
     )
 
-    session.ghosts = [
-        Ghost(
-            position=home,
-            home=home,
-            prev_position=home,
-        )
-        for home in ghost_homes
-    ]
+    session.ghosts = _create_ghosts(ghost_homes)
 
     session.items = place_items(
         session=session,
@@ -137,3 +130,30 @@ def complete_level(session: "GameSession") -> None:
         session=session,
         lives=lives,
     )
+
+
+def _create_ghosts(
+    ghost_homes: list[Position],
+) -> list[Ghost]:
+    """Create the ghosts for a level."""
+
+    personalities = (
+        GhostPersonality.BLINKY,
+        GhostPersonality.PINKY,
+        GhostPersonality.INKY,
+        GhostPersonality.CLYDE,
+    )
+
+    return [
+        Ghost(
+            position=home,
+            home=home,
+            prev_position=home,
+            personality=personality,
+        )
+        for home, personality in zip(
+            ghost_homes,
+            personalities,
+            strict=True,
+        )
+    ]

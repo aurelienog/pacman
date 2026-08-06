@@ -20,7 +20,10 @@ class GameSession:
     MAX_DELTA_SECONDS = 0.1
     MIN_PACGUM_RATIO = 0.50
 
-    def __init__(self, config: GameConfig, maze_factory: AmazingMazeFactory) -> None:
+    def __init__(self,
+                 config: GameConfig,
+                 maze_factory: AmazingMazeFactory
+                 ) -> None:
         """Create a new game session.
 
         Args:

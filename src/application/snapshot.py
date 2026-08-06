@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from .contracts import RenderEntity, Snapshot
-from ..domain import Ghost
+from ..domain import Ghost, GhostMode
 
 if TYPE_CHECKING:
     from .game_session import GameSession
@@ -99,18 +99,21 @@ def _ghost_visual_position(
     Returns:
         Render information for one ghost.
     """
-    progress = (
-        1.0
-        if session.freeze_ghosts
-        else min(
-            1.0,
-            max(
-                0.0,
-                session._ghost_elapsed
-                / session.GHOST_STEP_SECONDS,
-            ),
+    if ghost.mode is GhostMode.RESPAWNING:
+        progress = 1.0
+    else:
+        progress = (
+            1.0
+            if session.freeze_ghosts
+            else min(
+                1.0,
+                max(
+                    0.0,
+                    session._ghost_elapsed
+                    / session.GHOST_STEP_SECONDS,
+                ),
+            )
         )
-    )
 
     return RenderEntity(
         x=ghost.prev_position.x

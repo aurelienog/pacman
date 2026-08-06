@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from collections import deque
 
-from ..domain import Direction, Maze, Position
+from ..domain import Direction, Ghost, Maze, Position
+import random
 
 
 def nearest_walkable(
@@ -23,6 +24,8 @@ def nearest_walkable(
     Returns:
         The nearest traversable position.
     """
+    if not maze.contains(start):
+        return start
     queue: deque[Position] = deque([start])
     visited: set[Position] = {start}
 
@@ -50,6 +53,129 @@ def nearest_walkable(
     return start
 
 
+def find_next_move(
+    ghost: Ghost,
+    target: Position,
+    maze: Maze,
+) -> tuple[Direction, Position] | None:
+    """Return the first step of the shortest path to a target.
+
+    Args:
+        ghost: Ghost to move.
+        target: Desired destination.
+        maze: Current maze.
+
+    Returns:
+        Selected direction and destination, or ``None`` if no movement is
+        possible.
+    """
+    move = bfs_next_move(
+        ghost,
+        target,
+        maze,
+    )
+
+    if move is not None:
+        return move
+
+    choices = _available_moves(
+        ghost,
+        maze,
+    )
+
+    if not choices:
+        return None
+
+    return min(
+        choices,
+        key=lambda move: manhattan_distance(
+            move[1],
+            target,
+        ),
+    )
+
+
+def bfs_next_move(
+    ghost: Ghost,
+    target: Position,
+    maze: Maze,
+) -> tuple[Direction, Position] | None:
+    """Return the first movement along the shortest path.
+
+    Breadth-first search is used to compute the shortest path between the
+    ghost and its target.
+
+    Args:
+        ghost: Ghost to move.
+        target: Destination.
+        maze: Current maze.
+
+    Returns:
+        First direction and position of the shortest path, or ``None`` if
+        no path exists.
+    """
+    start = ghost.position
+
+    if start == target:
+        return None
+
+    queue: deque[Position] = deque([start])
+    visited: set[Position] = {start}
+
+    parents: dict[
+        Position,
+        tuple[Position, Direction],
+    ] = {}
+
+    while queue:
+        current = queue.popleft()
+
+        if current == target:
+            break
+
+        for direction, neighbour in maze.neighbours(current):
+            if neighbour in visited:
+                continue
+
+            visited.add(neighbour)
+            parents[neighbour] = (
+                current,
+                direction,
+            )
+            queue.append(neighbour)
+
+    if target not in parents:
+        return None
+
+    current = target
+
+    while parents[current][0] != start:
+        current = parents[current][0]
+
+    _, direction = parents[current]
+
+    return (
+        direction,
+        current,
+    )
+
+
+def _available_moves(
+    ghost: Ghost,
+    maze: Maze,
+) -> list[tuple[Direction, Position]]:
+    """Return the legal movements for a ghost."""
+    moves = maze.neighbours(ghost.position)
+
+    non_reverse = [
+        (direction, position)
+        for direction, position in moves
+        if direction is not ghost.direction.opposite
+    ]
+
+    return non_reverse or moves
+
+
 def manhattan_distance(
     first: Position,
     second: Position,
@@ -63,4 +189,25 @@ def manhattan_distance(
     Returns:
         Manhattan distance between both positions.
     """
-    return abs(first.x - second.x) + abs(first.y - second.y)
+    return (
+        abs(first.x - second.x)
+        + abs(first.y - second.y)
+    )
+
+
+def random_walkable(
+    maze: Maze,
+    random_generator: random.Random,
+) -> Position:
+    """Return a random walkable position."""
+
+    walkable = []
+
+    for y in range(maze.height):
+        for x in range(maze.width):
+            position = Position(x, y)
+
+            if maze.neighbours(position):
+                walkable.append(position)
+
+    return random_generator.choice(walkable)
