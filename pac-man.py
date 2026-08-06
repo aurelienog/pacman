@@ -1,45 +1,50 @@
-from src.adapters import ConfigLoader, JsonHighscoreRepository
-from src.scores import ScoreRegistry
-from src.domain import GameConfig
+"""Command-line entry point for Pac-Man."""
 
+from __future__ import annotations
+
+import logging
 import sys
 from pathlib import Path
 
-
-# try:
-#     import pygame
-# except ImportError:
-#     print("❌ [ERROR] Missing dependency: pygame")
-#     print("Install it with: pip install pygame")
-#     sys.exit(1)
-
-# try:
-#     import src.adapters.amazing_maze_factory
-# except ImportError:
-#     print("❌ [ERROR] Missing dependency: mazegenerator")
-#     sys.exit(1)
+from src.adapters import AmazingMazeFactory, ConfigLoader, MazeGenerationError
+from src.application import GameSession
+from src.adapters import JsonHighscoreRepository
+from src.scores import ScoreRegistry
+from src.ui.pygame_app import PygameApplication
 
 
-def main() -> None:
-    if len(sys.argv) != 2:
+def main(argv: list[str] | None = None) -> int:
+    """Build adapters, validate arguments and launch the application."""
+    arguments = sys.argv[1:] if argv is None else argv
+    if len(arguments) != 1:
         print("❌ [ERROR] Usage: python3 pac-man.py <config.json>")
-        return
+        return 2
 
-    config_path = Path(sys.argv[1])
+    config_path = Path(arguments[0])
     if config_path.suffix.lower() != ".json":
         print("❌ [ERROR] configuration file must have a .json extension.")
-        return
+        return 2
 
     if not config_path.is_file():
         print(f"❌ [ERROR] configuration file '{config_path}' not found.")
-        return
+        return 2
 
-    config: GameConfig = ConfigLoader.load(config_path)
-    repository: JsonHighscoreRepository = JsonHighscoreRepository(
-        config.highscore_filename)
+    logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
+
+    config = ConfigLoader.load(config_path)
+    repository = JsonHighscoreRepository(config.highscore_filename)
     score_registry = ScoreRegistry(repository)
-    print(score_registry.scores)
+    session = GameSession(config, AmazingMazeFactory())
+
+    try:
+        return PygameApplication(session, score_registry).run()
+    except MazeGenerationError as error:
+        print(f"Could not start the game: {error}")
+        return 1
+    except Exception as error:
+        print(f"Unexpected error: {error}")
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
