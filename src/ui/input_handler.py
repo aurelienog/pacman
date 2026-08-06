@@ -5,17 +5,24 @@ from __future__ import annotations
 from typing import Any
 
 from src.scores import ScoreRegistry
-# from src.adapters.highscore_manager import JsonHighscoreRepository
 from src.application import GamePhase, GameSession, InputAction
+from src.ui.menu_renderer import MenuRenderer
 
 
 class InputHandler:
-    """Manage keyboard events, menu selection, and highscore entry state."""
+    """Manage keyboard and mouse events, menu selection, and highscore entry state."""
 
-    def __init__(self, session: GameSession, score_registry: ScoreRegistry, pygame: Any) -> None:
+    def __init__(
+        self,
+        session: GameSession,
+        score_registry: ScoreRegistry,
+        pygame: Any,
+        menu_renderer: MenuRenderer,
+    ) -> None:
         self._session = session
         self._score_registry = score_registry
         self._pygame = pygame
+        self._menu_renderer = menu_renderer
         self.menu_index = 0
         self.show_scores = False
         self.show_instructions = False
@@ -28,6 +35,17 @@ class InputHandler:
         if event.type == self._pygame.QUIT:
             self._session.dispatch(InputAction.QUIT)
             return
+
+        # Mouse movement processing
+        if event.type == self._pygame.MOUSEMOTION:
+            self._handle_mouse_move(event.pos)
+            return
+
+        # Left mouse click handling
+        if event.type == self._pygame.MOUSEBUTTONDOWN and event.button == 1:
+            self._handle_mouse_click(event.pos)
+            return
+
         if event.type != self._pygame.KEYDOWN:
             return
 
@@ -43,6 +61,55 @@ class InputHandler:
             return
 
         self._handle_playing_key(event.key)
+
+    @staticmethod
+    def _is_inside(pos: tuple[int, int], rect: Any) -> bool:
+        """Pure math point-in-bounds check (100% MLX compatible, no rect.collidepoint)."""
+        px, py = pos
+        return rect.left <= px <= rect.right and rect.top <= py <= rect.bottom
+
+    def _handle_mouse_move(self, pos: tuple[int, int]) -> None:
+        snapshot = self._session.snapshot()
+        if snapshot.phase is GamePhase.MAIN_MENU and not self.show_scores and not self.show_instructions:
+            for index, rect in enumerate(self._menu_renderer.main_menu_rects):
+                if self._is_inside(pos, rect):
+                    self.menu_index = index
+                    break
+        elif snapshot.phase is GamePhase.PAUSED:
+            for index, rect in enumerate(self._menu_renderer.pause_menu_rects):
+                if self._is_inside(pos, rect):
+                    self.pause_index = index
+                    break
+
+    def _handle_mouse_click(self, pos: tuple[int, int]) -> None:
+        snapshot = self._session.snapshot()
+        if snapshot.phase is GamePhase.MAIN_MENU:
+            if self.show_scores or self.show_instructions:
+                self.show_scores = self.show_instructions = False
+                return
+            for index, rect in enumerate(self._menu_renderer.main_menu_rects):
+                if self._is_inside(pos, rect):
+                    self.menu_index = index
+                    if index == 0:
+                        self._session.dispatch(InputAction.CONFIRM)
+                    elif index == 1:
+                        self.show_scores = True
+                    elif index == 2:
+                        self.show_instructions = True
+                    elif index == 3:
+                        self._session.dispatch(InputAction.QUIT)
+                    break
+        elif snapshot.phase is GamePhase.PAUSED:
+            for index, rect in enumerate(self._menu_renderer.pause_menu_rects):
+                if self._is_inside(pos, rect):
+                    self.pause_index = index
+                    if index == 0:
+                        self._session.dispatch(InputAction.PAUSE)
+                    elif index == 1:
+                        self._session.dispatch(InputAction.RETURN_TO_MENU)
+                    elif index == 2:
+                        self._session.dispatch(InputAction.QUIT)
+                    break
 
     def _handle_menu_key(self, key: int) -> None:
         entries = 4
@@ -99,8 +166,11 @@ class InputHandler:
             self.name = self.name[:-1]
         elif event.key == self._pygame.K_RETURN:
             if not self.saved and self.name.strip():
-                self._score_registry.add(self.name, self._session.snapshot().score)
-                self.saved = True
+                try:
+                    self._score_registry.add(self.name, self._session.snapshot().score)
+                    self.saved = True
+                except (ValueError, OSError):
+                    return
             self.name = ""
             self.saved = False
             self._session.dispatch(InputAction.CONFIRM)

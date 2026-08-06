@@ -46,7 +46,7 @@ class MenuRenderer:
 
         self._font_cache: dict[int, Any] = {}
 
-        # Хитбокси для взаємодії з мишкою
+        # Hitboxes for mouse interaction
         self.main_menu_rects: list[Any] = []
         self.pause_menu_rects: list[Any] = []
 
@@ -144,6 +144,9 @@ class MenuRenderer:
 
         items = ("START GAME", "HIGHSCORES", "INSTRUCTIONS", "EXIT")
 
+        # For mouse interaction
+        self.main_menu_rects.clear()
+
         for index, label in enumerate(items):
             y_pos = start_y + index * item_spacing
             is_selected = index == menu_index
@@ -154,12 +157,14 @@ class MenuRenderer:
             text_surf = menu_font.render(text_val, True, color)
             text_rect = text_surf.get_rect(center=(sw // 2, y_pos))
 
+            box_w = max(int(sw * 0.28), text_rect.width + int(sw * 0.06))
+            box_h = max(44, int(text_rect.height * 1.5))
+            hit_rect = self._pygame.Rect(0, 0, box_w, box_h)
+            hit_rect.center = (sw // 2, y_pos)
+            self.main_menu_rects.append(hit_rect)
+
             if is_selected:
-                box_w = max(int(sw * 0.28), text_rect.width + int(sw * 0.06))
-                box_h = int(text_rect.height * 1.5)
-                box_rect = self._pygame.Rect(0, 0, box_w, box_h)
-                box_rect.center = text_rect.center
-                draw_neon_button_box(screen, box_rect, self._pygame)
+                draw_neon_button_box(screen, hit_rect, self._pygame)
 
             screen.blit(text_surf, text_rect)
 
@@ -183,6 +188,9 @@ class MenuRenderer:
         start_y = card_rect.top + int(card_h * 0.42)
         spacing = int(card_h * 0.16)
 
+        # For mouse interaction
+        self.pause_menu_rects.clear()
+
         for index, label in enumerate(items):
             y_pos = start_y + index * spacing
             is_selected = index == pause_index
@@ -193,12 +201,14 @@ class MenuRenderer:
             text_surf = menu_font.render(text_val, True, color)
             text_rect = text_surf.get_rect(center=(sw // 2, y_pos))
 
+            box_w = max(int(card_w * 0.8), text_rect.width + 30)
+            box_h = max(40, int(text_rect.height * 1.4))
+            hit_rect = self._pygame.Rect(0, 0, box_w, box_h)
+            hit_rect.center = (sw // 2, y_pos)
+            self.pause_menu_rects.append(hit_rect)
+
             if is_selected:
-                box_w = max(int(card_w * 0.8), text_rect.width + 30)
-                box_h = int(text_rect.height * 1.4)
-                box_rect = self._pygame.Rect(0, 0, box_w, box_h)
-                box_rect.center = text_rect.center
-                draw_neon_button_box(screen, box_rect, self._pygame, color=purple_color)
+                draw_neon_button_box(screen, hit_rect, self._pygame, color=purple_color)
 
             screen.blit(text_surf, text_rect)
 

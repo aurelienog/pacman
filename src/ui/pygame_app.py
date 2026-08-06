@@ -31,7 +31,9 @@ class PygameApplication:
         atlas = NeonSpriteAtlas(pygame) if NeonSpriteAtlas.available() else None
         menu_renderer = MenuRenderer(pygame, self._score_registry)
         game_renderer = GameRenderer(pygame, atlas)
-        input_handler = InputHandler(self._session, self._score_registry, pygame)
+
+        # Pass menu_renderer to read mouse hitboxes
+        input_handler = InputHandler(self._session, self._score_registry, pygame, menu_renderer)
 
         clock = pygame.time.Clock()
         fonts = (pygame.font.Font(None, 30), pygame.font.Font(None, 48), pygame.font.Font(None, 72))
