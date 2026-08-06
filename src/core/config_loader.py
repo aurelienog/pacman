@@ -1,3 +1,0 @@
-💡 Puntos clave para probar tu ConfigLoaderGestión de Comentarios:
-El estándar JSON normal no soporta líneas con #. Recuerda implementar la lógica para ignorar o filtrar las líneas que empiecen por # (o comentarios tipo //) antes de pasárselo a json.loads().  Clamping & Defaults:
-Asegúrate de que tu ConfigLoader aplique valores seguros por defecto (por ejemplo lives = 3 o level_max_time = 90) en caso de que borres alguna clave del archivo para simular un config defectuoso durante la evaluación. 
