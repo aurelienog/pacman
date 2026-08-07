@@ -66,8 +66,10 @@ class AmazingMazeFactory:
                 "A-Maze-ing failed to generate the maze."
             ) from error
 
-        if len(raw_cells) != height or any(len(row) != width for row in raw_cells):
-            raise MazeGenerationError("A-Maze-ing returned an invalid maze size.")
+        if len(raw_cells) != height or any(len(row) != width
+                                           for row in raw_cells):
+            raise MazeGenerationError(
+                "A-Maze-ing returned an invalid maze size.")
 
         if any(not isinstance(cell, int) or not 0 <= cell <= 15
                for row in raw_cells for cell in row):
