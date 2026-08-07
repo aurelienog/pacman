@@ -1,0 +1,45 @@
+[project]
+name = "pacman"
+version = "1.0.0"
+description = "Pac-Man clone developed for the 42 School subject."
+readme = "README.md"
+requires-python = ">=3.12"
+
+dependencies = [
+    "pygame>=2.6.0",
+    "mazegenerator",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "flake8>=7.1",
+    "mypy>=1.11",
+]
+
+# Search for .whl files in the project root
+[tool.uv]
+find-links = ["."]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_ignores = true
+ignore_missing_imports = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+
+[tool.flake8]
+max-line-length = 79
+exclude = [
+    ".venv",
+    "__pycache__",
+    ".mypy_cache",
+    ".pytest_cache",
+]
