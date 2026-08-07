@@ -3,14 +3,40 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from .game_session import GameSession
 
+from .interpolation import (
+    ghost_progress,
+    player_progress,
+)
 from .contracts import GamePhase
-from ..domain import Direction, GhostMode
+from ..domain import (
+    Direction,
+    GhostMode,
+    Position,
+)
+
+SWITCH_THRESHOLD = 0.4
 
 
-def handle_collisions(session: "GameSession") -> None:
+def occupied_position(
+    previous: Position,
+    current: Position,
+    progress: float,
+) -> Position:
+    """Return the cell currently occupied by an entity."""
+
+    if progress < SWITCH_THRESHOLD:
+        return previous
+
+    return current
+
+
+def handle_collisions(
+    session: "GameSession",
+) -> None:
     """Resolve collisions between the player and ghosts.
 
     Args:
@@ -21,28 +47,52 @@ def handle_collisions(session: "GameSession") -> None:
     """
     assert session.player is not None
 
+    occupied_player = occupied_position(
+        session.player.prev_position,
+        session.player.position,
+        player_progress(session),
+    )
+
     for ghost in session.ghosts:
 
-        if (
-            ghost.position != session.player.position
-            or ghost.mode is GhostMode.RESPAWNING
-        ):
+        if ghost.mode is GhostMode.RESPAWNING:
             continue
 
-        if ghost.mode is GhostMode.FRIGHTENED:
+        # Favour the player when eating frightened ghosts.
+        if (
+            ghost.mode is GhostMode.FRIGHTENED
+            and session.player.position == ghost.position
+        ):
             session.score += session._config.points_per_ghost
-
             ghost.prev_position = ghost.position
             ghost.mode = GhostMode.RESPAWNING
-            ghost.respawn_remaining = session.GHOST_RESPAWN_SECONDS
+            ghost.respawn_remaining = (
+                session.GHOST_RESPAWN_SECONDS
+            )
+            continue
 
-        elif not session.invincible:
-            lose_life(session, "Caught by a ghost!")
+        occupied_ghost = occupied_position(
+            ghost.prev_position,
+            ghost.position,
+            ghost_progress(session),
+        )
+
+        if occupied_ghost != occupied_player:
+            continue
+
+        if not session.invincible:
+            lose_life(
+                session,
+                "Caught by a ghost!",
+            )
 
         return
 
 
-def lose_life(session: "GameSession", message: str) -> None:
+def lose_life(
+    session: "GameSession",
+    message: str,
+) -> None:
     """Remove one player life and update the game state.
 
     Args:
@@ -59,7 +109,8 @@ def lose_life(session: "GameSession", message: str) -> None:
     if session.player.lives <= 0:
         session.phase = GamePhase.GAME_OVER
         session.message = (
-            f"{message} Final score: {session.score}. Press Enter."
+            f"{message} Final score: "
+            f"{session.score}. Press Enter."
         )
         return
 

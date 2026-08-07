@@ -7,9 +7,9 @@ from .geometry import Position, Direction
 
 class GhostPersonality(Enum):
     BLINKY = auto()
-    PINKY = auto()
     INKY = auto()
     CLYDE = auto()
+    PINKY = auto()
 
 
 class GhostMode(Enum):

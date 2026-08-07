@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from .interpolation import player_progress, ghost_progress
 from .contracts import RenderEntity, Snapshot
 from ..domain import Ghost, GhostMode
 
@@ -56,19 +57,7 @@ def _player_visual_position(
     if session.player is None:
         return (0.0, 0.0)
 
-    step = (
-        session.BASE_PLAYER_STEP_SECONDS / 2
-        if session.speed_boost
-        else session.BASE_PLAYER_STEP_SECONDS
-    )
-
-    progress = min(
-        1.0,
-        max(
-            0.0,
-            session._player_elapsed / step,
-        ),
-    )
+    progress = player_progress(session)
 
     return (
         session.player.prev_position.x
@@ -102,18 +91,7 @@ def _ghost_visual_position(
     if ghost.mode is GhostMode.RESPAWNING:
         progress = 1.0
     else:
-        progress = (
-            1.0
-            if session.freeze_ghosts
-            else min(
-                1.0,
-                max(
-                    0.0,
-                    session._ghost_elapsed
-                    / session.GHOST_STEP_SECONDS,
-                ),
-            )
-        )
+        progress = ghost_progress(session)
 
     return RenderEntity(
         x=ghost.prev_position.x

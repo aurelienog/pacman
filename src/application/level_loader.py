@@ -139,9 +139,9 @@ def _create_ghosts(
 
     personalities = (
         GhostPersonality.BLINKY,
-        GhostPersonality.PINKY,
         GhostPersonality.INKY,
         GhostPersonality.CLYDE,
+        GhostPersonality.PINKY,
     )
 
     return [
