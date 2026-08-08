@@ -12,6 +12,18 @@ from src.adapters import JsonHighscoreRepository
 from src.scores import ScoreRegistry
 from src.ui.pygame_app import PygameApplication
 
+try:
+    import pygame
+except ImportError:
+    print("❌ [ERROR] Missing dependency: pygame")
+    print("Install it with: pip install pygame")
+    sys.exit(1)
+
+try:
+    import src.adapters.amazing_maze_factory
+except ImportError:
+    print("❌ [ERROR] Missing dependency: mazegenerator")
+    sys.exit(1)
 
 def main(argv: list[str] | None = None) -> int:
     """Build adapters, validate arguments and launch the application."""
@@ -39,10 +51,10 @@ def main(argv: list[str] | None = None) -> int:
     try:
         return PygameApplication(session, score_registry).run()
     except MazeGenerationError as error:
-        print(f"Could not start the game: {error}")
+        print(f"❌ [ERROR] Could not start the game: {error}")
         return 1
     except Exception as error:
-        print(f"Unexpected error: {error}")
+        print(f"❌ [ERROR] Unexpected error: {error}")
         return 1
 
 
