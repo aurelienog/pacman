@@ -1,6 +1,6 @@
 # Project Timeline
 
-The project was initially planned over four weeks, with an estimated workload of approximately **150 hours** distributed across two developers. Thanks to an early focus on the engine architecture and the parallel development of the rendering system, implementation progressed faster than originally expected. As a result, the second week is dedicated primarily to renderer refactoring, UI abstraction and testing, while the final week focuses on release preparation, packaging and documentation.
+The project was initially planned over four weeks, with an estimated workload of approximately **150 hours** distributed across two developers. Thanks to an early focus on the engine architecture and the parallel development of the rendering system and asset pipeline, implementation progressed faster than originally expected. As a result, the second week is dedicated primarily to renderer refactoring, UI abstraction, asset polishing, and testing, while the final week focuses on release preparation, packaging and documentation.
 
 ## Planned Schedule
 
@@ -9,7 +9,7 @@ The project was initially planned over four weeks, with an estimated workload of
 Main milestones:
 
 - Project setup (Git, Makefile, coding standards)
-- Layered Architecture design
+- Layered Architecture design & interface contract definition (`Snapshot`, `InputAction`)
 - Configuration loader and JSON parser
 - A-Maze-ing adapter integration
 - Highscore persistence
@@ -20,10 +20,17 @@ Main milestones:
 - Collision system
 - Entity interpolation and renderer snapshots
 - Parallel development of the Pygame renderer, assets and game loop
+- Improve Pygame renderer abstraction and isolate asset loaders
+- Refactor rendering primitives for strict MLX compatibility (pure math bounds checking, standard text rendering, sprite blitting)
+- Design and implement custom sprite atlases (Pac-Man 4x3 direction/mouth animation, 4 individual Ghost 4x2 atlases, and Utils item atlas)
+- HUD redesign with dynamic resolution scaling and section separators
+- Interactive menu and pause overlay mouse support (`MOUSEMOTION` & `MOUSEBUTTONDOWN`)
+- Dynamic sci-fi background frame scaling and UI panel integration
+
 
 ### Week 2 (~60h)
 
-With the core functionality already implemented, the second week focuses on improving the internal architecture of the rendering layer and increasing the level of abstraction in the UI. In parallel, unit and integration tests are developed, while gameplay polishing, bug fixing and static analysis (mypy and flake8) are carried out to prepare the project for release.
+With the core functionality already implemented, the second week focuses on improving the internal architecture of the rendering layer, increasing the level of abstraction in the UI, and ensuring strict compliance with graphical library constraints (MLX equivalence rules). In parallel, unit and integration tests are developed, while gameplay polishing, asset refinement, bug fixing, and static analysis (mypy and flake8) are carried out to prepare the project for release.
 
 Main milestones:
 
@@ -36,7 +43,7 @@ Main milestones:
 - Asset integration
 - Unit tests
 - Integration tests
-- Gameplay balancing
+- Gameplay balancing and collision threshold tuning
 - Bug fixing
 - Static analysis (mypy & flake8)
 
@@ -90,6 +97,6 @@ gantt
 
 | Week       | Planned Goals                                    | Actual Delivered                                                                                                                                                                | Status / Variances                                                                                                                          |
 | :--------- | :----------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Week 1** | Core engine implementation and initial rendering | Core engine completed (configuration, adapters, domain model, game session, AI, collisions, interpolation) together with a functional Pygame renderer, assets and UI foundation | **Completed ahead of schedule.** Completed ahead of schedule. Parallel development allowed the rendering layer to mature alongside the core engine, bringing forward a substantial portion of the work originally planned for Week 2. |
-| **Week 2** | Renderer refactoring and testing                 | Improve renderer architecture and UI abstraction while expanding unit and integration tests, fixing gameplay issues and performing static analysis                              | **On schedule.** Focus shifts from feature development to code quality and maintainability.                                                 |
-| **Week 3** | Packaging and delivery                           | Final documentation, packaging, release preparation and final polish                                                                                                            | **On schedule.** Reserved primarily for stabilization and project delivery rather than feature implementation.                              |
+| **Week 1** | Core engine implementation and initial rendering | Core engine completed (configuration, adapters, domain model, game session, AI, collisions, interpolation) together with a functional Pygame renderer, custom asset pipeline foundation, and initial UI layouts, implemented interactive mouse navigation, dynamic HUD scaling  | **Completed ahead of schedule.** Parallel development allowed the rendering layer to mature alongside the core engine, bringing forward a substantial portion of the work originally planned for Week 2. |
+| **Week 2** | Renderer refactoring and testing                 | Improve renderer architecture and UI abstraction while expanding unit and integration tests, fixing gameplay issues and performing static analysis. Refactored renderer architecture into isolated asset modules, ensured strict MLX compatibility                              | **On schedule.** Focus shifts from feature development to code quality and maintainability. *Focus shifted from core gameplay to visual presentation polish, MLX compliance, code quality, and maintainability.*                                                |
+| **Week 3** | Packaging and delivery                           | Final documentation, project management evidence compilation, packaging, release preparation and final polish                                                                                                            | **On schedule.** Reserved primarily for stabilization and project delivery rather than feature implementation.                              |
