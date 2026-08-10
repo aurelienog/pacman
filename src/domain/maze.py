@@ -51,4 +51,5 @@ class Maze:
         They are decorative, not traversable game space, so no item may be
         placed there.
         """
-        return self.contains(position) and self.cells[position.y][position.x] == 15
+        return (self.contains(position)
+                and self.cells[position.y][position.x] == 15)

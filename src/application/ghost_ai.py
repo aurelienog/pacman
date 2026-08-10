@@ -7,6 +7,7 @@ from ..domain import (
     GhostPersonality,
     Maze,
     Player,
+    Direction,
     Position,
 )
 
@@ -200,7 +201,7 @@ class GhostAI:
     def _advance(
         maze: Maze,
         start: Position,
-        direction,
+        direction: Direction,
         steps: int,
     ) -> Position:
         """Advance a position while movement is possible.

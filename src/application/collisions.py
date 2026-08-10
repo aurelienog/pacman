@@ -18,7 +18,7 @@ from ..domain import (
     Position,
 )
 
-SWITCH_THRESHOLD = 0.4
+SWITCH_THRESHOLD = 0.2
 
 
 def occupied_position(

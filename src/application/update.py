@@ -130,7 +130,7 @@ def _update_player(
 
 def _update_ghosts(
     session: GameSession,
-    delta
+    delta: float
 ) -> None:
     """Advance all ghosts according to elapsed time.
 
