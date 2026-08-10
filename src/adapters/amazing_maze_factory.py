@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import Protocol
 
 from src.domain.maze import Maze
+from mazegenerator import MazeGenerator
 
 
 class MazeGenerationError(RuntimeError):
@@ -54,7 +55,6 @@ class AmazingMazeFactory:
         """
 
         try:
-            from mazegenerator import MazeGenerator
             generated = MazeGenerator(
                 size=(width, height),
                 perfect=False,
@@ -63,7 +63,7 @@ class AmazingMazeFactory:
 
         except Exception as error:
             raise MazeGenerationError(
-                "A-Maze-ing failed to generate the maze."
+                f"A-Maze-ing failed to generate the maze: {error}"
             ) from error
 
         if len(raw_cells) != height or any(len(row) != width
