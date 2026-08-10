@@ -6,24 +6,24 @@ import logging
 import sys
 from pathlib import Path
 
-from src.adapters import AmazingMazeFactory, ConfigLoader, MazeGenerationError
-from src.application import GameSession
-from src.adapters import JsonHighscoreRepository
-from src.scores import ScoreRegistry
-from src.ui.pygame_app import PygameApplication
+try:
+    from src.adapters import (AmazingMazeFactory,
+                              ConfigLoader, MazeGenerationError)
+except ImportError:
+    print("❌ [ERROR] Missing dependency: mazegenerator")
+    sys.exit(1)
 
 try:
-    import pygame
+    from src.ui.pygame_app import PygameApplication
 except ImportError:
     print("❌ [ERROR] Missing dependency: pygame")
     print("Install it with: pip install pygame")
     sys.exit(1)
 
-try:
-    import src.adapters.amazing_maze_factory
-except ImportError:
-    print("❌ [ERROR] Missing dependency: mazegenerator")
-    sys.exit(1)
+from src.application import GameSession
+from src.adapters import JsonHighscoreRepository
+from src.scores import ScoreRegistry
+
 
 def main(argv: list[str] | None = None) -> int:
     """Build adapters, validate arguments and launch the application."""
@@ -41,7 +41,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"❌ [ERROR] configuration file '{config_path}' not found.")
         return 2
 
-    logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
+    logging.basicConfig(level=logging.WARNING,
+                        format="%(levelname)s: %(message)s")
 
     config = ConfigLoader.load(config_path)
     repository = JsonHighscoreRepository(config.highscore_filename)
