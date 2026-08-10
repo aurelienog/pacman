@@ -5,15 +5,28 @@ from __future__ import annotations
 from typing import Any
 
 
-def center_text(screen: Any, font: Any, value: str, color: tuple[int, int, int], y: int) -> Any:
-    """Render and draw centered text horizontally at height y. Returns text rect."""
+def center_text(
+    screen: Any,
+    font: Any,
+    value: str,
+    color: tuple[int, int, int],
+    y: int,
+) -> Any:
+    """Render and draw centered text horizontally at height y.
+    Returns text rect."""
     text = font.render(value, True, color)
     rect = text.get_rect(center=(screen.get_width() // 2, y))
     screen.blit(text, rect)
     return rect
 
 
-def center_float(x: float, y: float, left: int, top: int, cell: int) -> tuple[int, int]:
+def center_float(
+    x: float,
+    y: float,
+    left: int,
+    top: int,
+    cell: int,
+) -> tuple[int, int]:
     """Convert grid float coordinates to screen pixel coordinates."""
     return int(left + x * cell + cell / 2.0), int(top + y * cell + cell / 2.0)
 
@@ -58,19 +71,23 @@ def draw_menu_card_frame(
     pygame: Any,
     pacman_icon: Any = None,
 ) -> None:
-    """Draw a clean menu panel frame with a simple border and Pac-Man icon notch."""
-    # Тло панелі
+    """Draw a clean menu panel frame with a simple border
+    and Pac-Man icon notch."""
+    # Panel background
     pygame.draw.rect(screen, (8, 10, 24), rect)
-    # Проста рамка
+    # Simple frame
     pygame.draw.rect(screen, border_color, rect, width=2)
 
-    # Нижній виріз під іконку Пакмана
+    # Bottom cutout for the Pacman icon
     cx, cy = rect.centerx, rect.bottom
     cutout = pygame.Rect(cx - 24, cy - 6, 48, 12)
     pygame.draw.rect(screen, (8, 10, 24), cutout)
 
     if pacman_icon is not None:
-        icon_size = 28
-        scaled_icon = pygame.transform.smoothscale(pacman_icon, (icon_size, icon_size))
+        icon_size = 38
+        scaled_icon = pygame.transform.smoothscale(
+            pacman_icon,
+            (icon_size, icon_size)
+        )
         icon_rect = scaled_icon.get_rect(center=(cx, cy - 2))
         screen.blit(scaled_icon, icon_rect)
