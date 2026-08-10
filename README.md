@@ -213,7 +213,7 @@ The development process followed a structured project management methodology div
 
 ### Team RACI Matrix
 
-| Task / Responsibility | `<login1>` | `<login2>` |
+| Task / Responsibility | `aunoguei` | `oshtohri` |
 | :--- | :---: | :---: |
 | Architecture & Layer Contracts | **A / R** | **A / R** |
 | Engine Logic & BFS Pathfinding | **A / R** | C |
