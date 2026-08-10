@@ -223,7 +223,7 @@ The development process followed a structured project management methodology div
 | Pygame UI & Responsive Scaling | C | **A / R** |
 | Sprite Atlases & Visual Assets | C | **A / R** |
 | Highscore System Persistence | **A / R** | C |
-| Documentation & Packaging | C | **A / R** |
+| Documentation & Packaging | **A / R** | **A / R** |
 
 *Key: **A** = Accountable, **R** = Responsible, **C** = Consulted*
 
