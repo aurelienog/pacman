@@ -13,13 +13,29 @@ class HudView(BaseGameView):
     """Render top HUD columns and active cheat code tape."""
 
     def __init__(self, pygame: Any) -> None:
+        """Initialize HUD view and load icons.
+
+        Args:
+            pygame: Pygame module instance.
+
+        Returns:
+            None.
+        """
         super().__init__(pygame)
         self._pacman_icon = self._load_icon("pacman_icon.png")
         self._level_icon = self._load_icon("level_icon.png")
         self._timer_icon = self._load_icon("timer_icon.png")
 
     def draw(self, screen: Any, snapshot: Snapshot) -> None:
-        """Draw SCORE, LIVES, LEVEL, TIME columns and cheat indicators."""
+        """Draw SCORE, LIVES, LEVEL, TIME columns and cheat indicators.
+
+        Args:
+            screen: Pygame display surface.
+            snapshot: Current game state snapshot.
+
+        Returns:
+            None.
+        """
         sw, sh = screen.get_width(), screen.get_height()
 
         header_font_size = max(14, int(sh * 0.022))
