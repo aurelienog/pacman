@@ -12,17 +12,37 @@ SCORES_BG_PATH = BG_DIR / "background_scores.png"
 
 
 class HighscoresView(BaseMenuView):
-    """Render Top 10 leaderboard screen."""
+    """Render the Top 10 highscore screen."""
 
     def __init__(self, pygame: Any, score_registry: ScoreRegistry) -> None:
+        """Initialize the highscore view and load its visual assets.
+
+        Args:
+            pygame: Pygame module instance.
+            score_registry: Registry providing the stored high scores.
+
+        Returns:
+            None.
+        """
         super().__init__(pygame)
         self._score_registry = score_registry
         self._scores_bg = self._load_image(SCORES_BG_PATH, alpha=False)
         self._logo_scores = self._load_icon("top10_highscores_logo.png")
         self._pacman_icon = self._load_icon("pacman_icon.png")
+        self._crown_icon = self._load_icon("crown_icon.png")
 
     def draw(self, screen: Any) -> None:
-        """Draw background, logo, and leaderboard card."""
+        """Draw background, logo, and the Top 10 highscore leaderboard card.
+
+        The view renders the background, title, leaderboard card,
+        score entries, and the navigation hint.
+
+        Args:
+            screen: Pygame surface on which the leaderboard is drawn.
+
+        Returns:
+            None.
+        """
         sw, sh = screen.get_width(), screen.get_height()
 
         self._render_bg(screen, self._scores_bg)
@@ -30,11 +50,11 @@ class HighscoresView(BaseMenuView):
             screen,
             self._logo_scores,
             "TOP 10 HIGHSCORES",
-            height_ratio=0.16,  # <--- Size (e.g. 0.16 = 16% of screen height)
-            y_ratio=0.12,       # <--- Position (0.12 = move higher)
+            height_ratio=0.16,
+            y_ratio=0.12,
         )
 
-        # Dynamic card sizes (75% width and 68% height of the window)
+        # Dynamic card sizes
         card_w = max(520, int(sw * 0.50))
         card_h = max(420, int(sh * 0.60))
         card_rect = self._pygame.Rect(0, 0, card_w, card_h)
@@ -89,10 +109,10 @@ class HighscoresView(BaseMenuView):
 
             color = (255, 230, 0) if is_top else (220, 150, 255)
 
-            if is_top and self._pacman_icon is not None:
+            if is_top and self._crown_icon is not None:
                 icon_sz = max(18, int(row_h * 0.8))
                 scaled_icon = self._pygame.transform.smoothscale(
-                    self._pacman_icon,
+                    self._crown_icon,
                     (icon_sz, icon_sz)
                 )
                 icon_rect = scaled_icon.get_rect(
