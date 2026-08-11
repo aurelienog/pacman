@@ -236,7 +236,7 @@ All project management evidence, Gantt charts, risk mitigation plans, test plans
 ## Resources & AI Usage
 
 ### References & Documentation
-- [Pac-Man Dossier by Jamey Pittman](https://www.pacmanfoss.com/) — Detailed arcade mechanics, ghost behavioral logic, and timing specs.
+- [Pac-Man Dossier by Jamey Pittman](https://pacman.holenet.info/) — Detailed arcade mechanics, ghost behavioral logic, and timing specs.
 - [Python 3.10+ Typing Documentation](https://docs.python.org/3/library/typing.html) — Static type hints and mypy practices.
 - [Pygame Community Docs](https://www.pygame.org/docs/) — Windowing and event loop handling.
 
