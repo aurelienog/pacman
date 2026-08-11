@@ -10,9 +10,17 @@ from .base_game_view import BaseGameView
 
 
 class EndScreenView(BaseGameView):
-    """Render Game Over / Victory modal card."""
+    """Render Game Over and Victory modal card overlays."""
 
     def __init__(self, pygame: Any) -> None:
+        """Initialize the end screen view and load icon.
+
+        Args:
+            pygame: Pygame module instance.
+
+        Returns:
+            None.
+        """
         super().__init__(pygame)
         self._pacman_icon = self._load_icon("pacman_icon.png")
 
@@ -24,7 +32,18 @@ class EndScreenView(BaseGameView):
         name: str,
         saved: bool,
     ) -> None:
-        """Draw dynamically scaling end game dialog card."""
+        """Draw dynamically scaling Game Over or Victory dialog card.
+
+        Args:
+            screen: Pygame display surface.
+            snapshot: Current game state snapshot.
+            fonts: Tuple of cached fonts for rendering.
+            name: Player name input string.
+            saved: Whether the highscore has been saved.
+
+        Returns:
+            None.
+        """
         sw, sh = screen.get_width(), screen.get_height()
 
         # Dynamic win/loss card sizes
