@@ -18,6 +18,15 @@ class ItemsRenderer:
         pygame: Any,
         pacgums_atlas: PacgumsSpriteAtlas | None,
     ) -> None:
+        """Initialize the items renderer.
+
+        Args:
+            pygame: Pygame module instance.
+            pacgums_atlas: Loaded Pacgums sprite atlas or None.
+
+        Returns:
+            None.
+        """
         self._pygame = pygame
         self._pacgums_atlas = pacgums_atlas
 
@@ -29,13 +38,27 @@ class ItemsRenderer:
         top: int,
         cell: int,
     ) -> None:
-        """Draw remaining collectible items."""
+        """Draw remaining collectible items on the screen.
+
+        Args:
+            screen: Pygame display surface.
+            snapshot: Current game state snapshot.
+            left: Left pixel offset of the maze grid.
+            top: Top pixel offset of the maze grid.
+            cell: Size of a single grid cell in pixels.
+
+        Returns:
+            None.
+        """
         assert snapshot.maze is not None
         maze_w, maze_h = snapshot.maze.width, snapshot.maze.height
 
         for position, item in snapshot.items:
             center = center_float(position.x, position.y, left, top, cell)
-            if self._pacgums_atlas is not None and self._pacgums_atlas.available():
+            if (
+                self._pacgums_atlas is not None
+                and self._pacgums_atlas.available()
+            ):
                 self._pacgums_atlas.draw_item(
                     screen, center, cell, item.kind, position, maze_w, maze_h
                 )
