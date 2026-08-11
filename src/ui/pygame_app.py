@@ -1,4 +1,4 @@
-"""Pygame driving coordinator adapter."""
+"""Provide the Pygame application adapter for the Pac-Man game."""
 
 from __future__ import annotations
 
@@ -22,10 +22,27 @@ class PygameApplication:
         session: GameSession,
         score_registry: ScoreRegistry,
     ) -> None:
+        """Initialize application dependencies and services.
+
+        Args:
+            session: Active Pac-Man game session.
+            score_registry: Highscore table registry service.
+        """
         self._session = session
         self._score_registry = score_registry
 
     def run(self) -> int:
+        """Run the Pac-Man application until the game exits.
+
+        The method initializes Pygame, creates the rendering and input
+        components, processes window events, updates the game session,
+        and renders the appropriate screen for the current game phase.
+        Pygame is always shut down when the main loop finishes.
+
+        Returns:
+            ``0`` when the application exits normally, or ``1`` when
+            Pygame cannot be imported.
+        """
         try:
             import pygame
         except ImportError:
