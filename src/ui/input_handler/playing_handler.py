@@ -12,12 +12,31 @@ class PlayingInputHandler:
     into game session commands."""
 
     def __init__(self, session: GameSession, pygame: Any) -> None:
+        """Initialize playing input handler.
+
+        Args:
+            session: Active game session that receives input actions.
+            pygame: Pygame module instance.
+
+        Returns:
+            None.
+        """
         self._session = session
         self._pygame = pygame
 
     def handle_key(self, key: int) -> None:
-        """Dispatch gameplay direction commands, pause toggle,
-        or cheat codes."""
+        """Dispatch gameplay direction commands, pause toggle, or cheats.
+
+        Direction keys control the player. Escape and P toggle pause,
+        while the configured cheat keys toggle gameplay cheats or
+        perform level and life actions.
+
+        Args:
+            key: Pygame key constant.
+
+        Returns:
+            None.
+        """
         actions = {
             self._pygame.K_UP: InputAction.UP,
             self._pygame.K_w: InputAction.UP,
