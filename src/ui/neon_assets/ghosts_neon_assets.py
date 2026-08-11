@@ -14,10 +14,17 @@ GHOST_Y_OFFSET = 0
 
 
 class GhostsSpriteAtlas:
-    """Slice and render animated ghosts using individual color atlases
-    and utils_sprite_atlas."""
+    """Slice and render animated ghosts using color and utils atlases."""
 
     def __init__(self, pygame: Any) -> None:
+        """Initialize ghost atlas loaders and slice subsurface frames.
+
+        Args:
+            pygame: Pygame module instance.
+
+        Returns:
+            None.
+        """
         self._pygame = pygame
         self._ghost_atlases: dict[str, list[list[Any]]] = {}
         self._utils_frames: list[list[Any]] = []
@@ -37,7 +44,11 @@ class GhostsSpriteAtlas:
         self._utils_frames = self._load_2x4_atlas("utils_sprite_atlas.png")
 
     def available(self) -> bool:
-        """Return True if ghost atlases and utils atlas loaded successfully."""
+        """Check if ghost atlases and utils atlas loaded successfully.
+
+        Returns:
+            True if all required atlas frames are available, else False.
+        """
         return len(self._ghost_atlases) >= 4 and len(self._utils_frames) == 2
 
     def draw_ghost(
@@ -49,8 +60,24 @@ class GhostsSpriteAtlas:
         mode: GhostMode,
         direction: Direction = Direction.NONE,
     ) -> None:
-        """Draw ghost matching color, mode, direction,
-        and walking skirt animation."""
+        """Draw ghost matching color, mode, direction, and animation.
+
+        Normal ghosts use their color-specific directional atlas and
+        alternate walking frames. Frightened ghosts use the animated
+        frightened frames, while respawning ghosts display only their
+        eyes.
+
+        Args:
+            screen: Pygame display surface.
+            center: (x, y) center pixel coordinate.
+            cell: Size of a single grid cell in pixels.
+            index: Ghost index determining color assignment.
+            mode: Ghost behavioral mode (Chase, Frightened, Respawning).
+            direction: Current direction of movement.
+
+        Returns:
+            None.
+        """
         if not self.available():
             return
 
@@ -91,6 +118,15 @@ class GhostsSpriteAtlas:
         screen.blit(scaled, scaled.get_rect(center=adjusted_center))
 
     def _load_2x4_atlas(self, filename: str) -> list[list[Any]]:
+        """Slice a 4x2 sprite atlas PNG into a 2D subsurface list.
+
+        Args:
+            filename: Image filename to locate and slice.
+
+        Returns:
+            2D list of sliced Pygame Surface frames.
+            Or an empty list if the file cannot be loaded.
+        """
         path = self._find_file(filename)
         if path is None:
             return []
@@ -114,6 +150,14 @@ class GhostsSpriteAtlas:
 
     @staticmethod
     def _find_file(filename: str) -> Path | None:
+        """Search for an asset filename in sprites and assets directories.
+
+        Args:
+            filename: Name of the asset file to find.
+
+        Returns:
+            Path object if found, otherwise None.
+        """
         possible = [
             Path(__file__).resolve().parents[3] / "assets/sprites" / filename,
             Path(__file__).resolve().parents[3] / "assets" / filename,
