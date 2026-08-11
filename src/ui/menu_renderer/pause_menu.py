@@ -16,16 +16,34 @@ class PauseMenuView(BaseMenuView):
     """Render pause overlay card and calculate pause menu hitboxes."""
 
     def __init__(self, pygame: Any) -> None:
+        """Initialize pause menu view and load icon.
+
+        Args:
+            pygame: Pygame module instance.
+
+        Returns:
+            None.
+        """
         super().__init__(pygame)
         self._pacman_icon = self._load_icon("pacman_icon.png")
         self.pause_menu_rects: list[Any] = []
 
     def draw(self, screen: Any, pause_index: int) -> None:
-        """Draw dynamically scaling pause card frame and choices."""
+        """Draw the pause menu and update its button hitboxes.
+
+        The selected item is highlighted, and the corresponding
+        rectangles are stored for mouse interaction.
+
+        Args:
+            screen: Pygame surface on which the pause menu is drawn.
+            pause_index: Index of the currently selected pause menu item.
+
+        Returns:
+            None.
+        """
         sw, sh = screen.get_width(), screen.get_height()
 
         # Dynamic pause card dimensions
-        # (50% width and 60% height of the window)
         card_w = max(420, int(sw * 0.30))
         card_h = max(380, int(sh * 0.50))
         card_rect = self._pygame.Rect(0, 0, card_w, card_h)
