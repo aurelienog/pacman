@@ -10,7 +10,7 @@ from .base_handler import BaseInputHandler
 
 
 class PauseInputHandler(BaseInputHandler):
-    """Process key and mouse inputs while the game is paused."""
+    """Process keyboard and mouse input in the pause menu."""
 
     def __init__(
         self,
@@ -18,20 +18,47 @@ class PauseInputHandler(BaseInputHandler):
         pygame: Any,
         menu_renderer: MenuRenderer,
     ) -> None:
+        """Initialize pause menu input handler.
+
+        Args:
+            session: Active game session used to dispatch pause actions.
+            pygame: Pygame module instance.
+            menu_renderer: Menu renderer providing pause menu hitboxes.
+
+        Returns:
+            None.
+        """
         self._session = session
         self._pygame = pygame
         self._menu_renderer = menu_renderer
         self.pause_index = 0
 
     def handle_mouse_move(self, pos: tuple[int, int]) -> None:
-        """Update selected pause item index on mouse hover."""
+        """Update the selected pause item based on mouse position.
+
+        Args:
+            pos: Mouse (x, y) coordinate tuple.
+
+        Returns:
+            None.
+        """
         for index, rect in enumerate(self._menu_renderer.pause_menu_rects):
             if self.is_inside(pos, rect):
                 self.pause_index = index
                 break
 
     def handle_mouse_click(self, pos: tuple[int, int]) -> None:
-        """Trigger selected action on mouse left-click."""
+        """Handle a left-click on a pause menu item.
+
+        The selected action can resume the game, return to the main menu,
+        or quit the application.
+
+        Args:
+            pos: Mouse (x, y) coordinate tuple.
+
+        Returns:
+            None.
+        """
         for index, rect in enumerate(self._menu_renderer.pause_menu_rects):
             if self.is_inside(pos, rect):
                 self.pause_index = index
@@ -44,7 +71,17 @@ class PauseInputHandler(BaseInputHandler):
                 break
 
     def handle_key(self, key: int) -> None:
-        """Process keyboard navigation for the pause overlay."""
+        """Process keyboard navigation and pause menu selection.
+
+        Escape and P toggle the pause state. Arrow keys and WASD move
+        the selection, while Enter and Space activate the selected item.
+
+        Args:
+            key: Pygame keyboard constant to process.
+
+        Returns:
+            None.
+        """
         if key in (self._pygame.K_ESCAPE, self._pygame.K_p):
             self._session.dispatch(InputAction.PAUSE)
         elif key in (self._pygame.K_UP, self._pygame.K_w):
