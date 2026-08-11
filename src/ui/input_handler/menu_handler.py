@@ -10,7 +10,7 @@ from .base_handler import BaseInputHandler
 
 
 class MenuInputHandler(BaseInputHandler):
-    """Process key and mouse inputs while in the Main Menu phase."""
+    """Process key and mouse inputs while in the Main Menu."""
 
     def __init__(
         self,
@@ -18,6 +18,16 @@ class MenuInputHandler(BaseInputHandler):
         pygame: Any,
         menu_renderer: MenuRenderer,
     ) -> None:
+        """Initialize main menu input handler.
+
+        Args:
+            session: Active game session used to dispatch menu actions.
+            pygame: Pygame module instance.
+            menu_renderer: Menu renderer providing menu item hitboxes.
+
+        Returns:
+            None.
+        """
         self._session = session
         self._pygame = pygame
         self._menu_renderer = menu_renderer
@@ -26,7 +36,17 @@ class MenuInputHandler(BaseInputHandler):
         self.show_instructions = False
 
     def handle_mouse_move(self, pos: tuple[int, int]) -> None:
-        """Update selected menu index when mouse hovers over an item."""
+        """Update the selected menu item based on mouse position.
+
+        Hovering over a menu item changes ``menu_index``. Selection is
+        not changed while a scores or instructions screen is displayed.
+
+        Args:
+            pos: Mouse (x, y) coordinate tuple.
+
+        Returns:
+            None.
+        """
         if self.show_scores or self.show_instructions:
             return
         for index, rect in enumerate(self._menu_renderer.main_menu_rects):
@@ -35,7 +55,18 @@ class MenuInputHandler(BaseInputHandler):
                 break
 
     def handle_mouse_click(self, pos: tuple[int, int]) -> None:
-        """Trigger action or close submenu when mouse left-clicks an item."""
+        """Handle a left-click on a main menu item.
+
+        Clicking a menu item starts the game, opens the scores or
+        instructions screen, or quits the application. Clicking while
+        a submenu is open closes that submenu.
+
+        Args:
+            pos: Mouse (x, y) coordinate tuple.
+
+        Returns:
+            None.
+        """
         if self.show_scores or self.show_instructions:
             self.show_scores = self.show_instructions = False
             return
@@ -53,7 +84,17 @@ class MenuInputHandler(BaseInputHandler):
                 break
 
     def handle_key(self, key: int) -> None:
-        """Process keyboard navigation for the main menu."""
+        """Process keyboard navigation and selection in the main menu.
+
+        Arrow keys and WASD move the selection. Enter and Space activate
+        the selected item, while Escape closes an open submenu.
+
+        Args:
+            key: Pygame keyboard constant to process.
+
+        Returns:
+            None.
+        """
         entries = 4
         if key in (self._pygame.K_UP, self._pygame.K_w):
             self.menu_index = (self.menu_index - 1) % entries
