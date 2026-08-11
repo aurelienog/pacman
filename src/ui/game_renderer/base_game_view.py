@@ -15,15 +15,39 @@ class BaseGameView:
     and font utilities."""
 
     def __init__(self, pygame: Any) -> None:
+        """Initialize the base game view and font cache.
+
+        Args:
+            pygame: Pygame module instance.
+
+        Returns:
+            None.
+        """
         self._pygame = pygame
         self._font_cache: dict[int, Any] = {}
 
     def _get_font(self, size: int) -> Any:
+        """Retrieve a cached font of the specified size.
+
+        Args:
+            size: Font point size.
+
+        Returns:
+            Pygame Font object.
+        """
         if size not in self._font_cache:
             self._font_cache[size] = self._pygame.font.Font(None, size)
         return self._font_cache[size]
 
     def _load_icon(self, filename: str) -> Any:
+        """Safely load an icon image from assets subdirectories.
+
+        Args:
+            filename: Name of the image file to load.
+
+        Returns:
+            Pygame Surface if loaded successfully, otherwise None.
+        """
         possible = [
             ICONS_DIR / filename,
             LOGOS_DIR / filename,
@@ -38,6 +62,11 @@ class BaseGameView:
         return None
 
     def _load_game_bg(self) -> Any:
+        """Safely load the gameplay background image.
+
+        Returns:
+            Pygame Surface if loaded successfully, otherwise None.
+        """
         possible = [
             BG_DIR / "game_bg.png",
             BG_DIR / "background_game.png",
