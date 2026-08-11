@@ -20,6 +20,16 @@ class EntitiesRenderer:
         pacman_atlas: PacmanSpriteAtlas | None,
         ghosts_atlas: GhostsSpriteAtlas | None,
     ) -> None:
+        """Initialize the entities renderer with sprite atlases.
+
+        Args:
+            pygame: Pygame module instance.
+            pacman_atlas: Loaded Pac-Man sprite atlas or None.
+            ghosts_atlas: Loaded Ghosts sprite atlas or None.
+
+        Returns:
+            None.
+        """
         self._pygame = pygame
         self._pacman_atlas = pacman_atlas
         self._ghosts_atlas = ghosts_atlas
@@ -32,7 +42,18 @@ class EntitiesRenderer:
         top: int,
         cell: int,
     ) -> None:
-        """Draw interpolated player position."""
+        """Draw interpolated player position using atlas or vector circle.
+
+        Args:
+            screen: Pygame display surface.
+            snapshot: Current game state snapshot.
+            left: Left pixel offset of the maze grid.
+            top: Top pixel offset of the maze grid.
+            cell: Size of a single grid cell in pixels.
+
+        Returns:
+            None.
+        """
         if snapshot.player is None:
             return
         px_vis, py_vis = snapshot.player_visual_pos
@@ -61,7 +82,18 @@ class EntitiesRenderer:
         top: int,
         cell: int,
     ) -> None:
-        """Draw interpolated ghost positions."""
+        """Draw interpolated ghost positions using atlas or vector fallback.
+
+        Args:
+            screen: Pygame display surface.
+            snapshot: Current game state snapshot.
+            left: Left pixel offset of the maze grid.
+            top: Top pixel offset of the maze grid.
+            cell: Size of a single grid cell in pixels.
+
+        Returns:
+            None.
+        """
         colors = [
             (255, 60, 60),
             (255, 140, 255),
@@ -70,18 +102,28 @@ class EntitiesRenderer:
         ]
         for index, g_ent in enumerate(snapshot.ghost_visual_positions):
             center = center_float(g_ent.x, g_ent.y, left, top, cell)
-            if self._ghosts_atlas is not None and self._ghosts_atlas.available():
+            ghost_mode = (
+                g_ent.mode if g_ent.mode is not None else GhostMode.CHASE
+            )
+            if (
+                self._ghosts_atlas is not None
+                and self._ghosts_atlas.available()
+            ):
                 self._ghosts_atlas.draw_ghost(
                     screen,
                     center,
                     cell,
                     index,
-                    g_ent.mode,
+                    ghost_mode,
                     g_ent.direction,
                 )
             else:
-                color = (50, 90, 255) if g_ent.mode is GhostMode.FRIGHTENED else colors[index % 4]
-                if g_ent.mode is not GhostMode.RESPAWNING:
+                color = (
+                    (50, 90, 255)
+                    if ghost_mode is GhostMode.FRIGHTENED
+                    else colors[index % 4]
+                )
+                if ghost_mode is not GhostMode.RESPAWNING:
                     draw_circle(
                         screen,
                         center,
