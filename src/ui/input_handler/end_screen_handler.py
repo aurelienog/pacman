@@ -18,6 +18,16 @@ class EndScreenInputHandler:
         score_registry: ScoreRegistry,
         pygame: Any,
     ) -> None:
+        """Initialize the end screen input handler.
+
+        Args:
+            session: Active GameSession instance.
+            score_registry: ScoreRegistry instance for highscores.
+            pygame: Pygame module instance.
+
+        Returns:
+            None.
+        """
         self._session = session
         self._score_registry = score_registry
         self._pygame = pygame
@@ -25,8 +35,19 @@ class EndScreenInputHandler:
         self.saved = False
 
     def handle_key_event(self, event: Any) -> None:
-        """Process Backspace, Enter key confirmation,
-        and alphanumeric character typing."""
+        """Process name-entry and confirmation keyboard events.
+
+        Backspace removes the last character. Enter saves a non-empty
+        name and confirms the result screen. Alphanumeric characters and
+        spaces are accepted while the name contains fewer than ten
+        characters.
+
+        Args:
+            event: Pygame keyboard event to process.
+
+        Returns:
+            None.
+        """
         if event.key == self._pygame.K_BACKSPACE:
             self.name = self.name[:-1]
         elif event.key == self._pygame.K_RETURN:
@@ -42,6 +63,8 @@ class EndScreenInputHandler:
             self.name = ""
             self.saved = False
             self._session.dispatch(InputAction.CONFIRM)
-        elif event.unicode and (event.unicode.isalnum() or event.unicode == " "):
+        elif event.unicode and (
+            event.unicode.isalnum() or event.unicode == " "
+        ):
             if len(self.name) < 10:
                 self.name += event.unicode
