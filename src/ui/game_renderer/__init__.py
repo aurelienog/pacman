@@ -30,6 +30,17 @@ class GameRenderer(BaseGameView):
         ghosts_atlas: GhostsSpriteAtlas | None,
         pacgums_atlas: PacgumsSpriteAtlas | None = None,
     ) -> None:
+        """Initialize component renderers and background assets.
+
+        Args:
+            pygame: Pygame module instance.
+            pacman_atlas: Loaded Pac-Man sprite atlas or None.
+            ghosts_atlas: Loaded Ghosts sprite atlas or None.
+            pacgums_atlas: Loaded Pacgums sprite atlas or None.
+
+        Returns:
+            None.
+        """
         super().__init__(pygame)
         self._game_bg = self._load_game_bg()
         self._hud_view = HudView(pygame)
@@ -48,7 +59,17 @@ class GameRenderer(BaseGameView):
         snapshot: Snapshot,
         fonts: tuple[Any, Any, Any],
     ) -> None:
-        """Draw complete gameplay view."""
+        """Draw complete active gameplay view including HUD,
+        maze, and entities.
+
+        Args:
+            screen: Pygame display surface.
+            snapshot: Current game state snapshot.
+            fonts: Tuple of cached fonts for rendering.
+
+        Returns:
+            None.
+        """
         if snapshot.maze is None or snapshot.player is None:
             return
 
@@ -94,7 +115,18 @@ class GameRenderer(BaseGameView):
         name: str,
         saved: bool,
     ) -> None:
-        """Draw GAME OVER or VICTORY modal card."""
+        """Draw GAME OVER or VICTORY modal card.
+
+        Args:
+            screen: Pygame display surface.
+            snapshot: Current game state snapshot.
+            fonts: Tuple of cached fonts for rendering.
+            name: Player name input string.
+            saved: Whether the score has been saved.
+
+        Returns:
+            None.
+        """
         self._end_screen_view.draw(screen, snapshot, fonts, name, saved)
 
 
