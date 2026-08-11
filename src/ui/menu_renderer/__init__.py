@@ -1,4 +1,4 @@
-"""Facade coordinator for menu renderers."""
+"""Coordinate rendering of the Pac-Man menu views."""
 
 from __future__ import annotations
 
@@ -15,6 +15,15 @@ class MenuRenderer:
     """Delegate menu rendering to specific modular view classes."""
 
     def __init__(self, pygame: Any, score_registry: ScoreRegistry) -> None:
+        """Initialize all sub-views and view dependencies.
+
+        Args:
+            pygame: Pygame module instance.
+            score_registry: Highscore table registry service.
+
+        Returns:
+            None.
+        """
         self._main_menu_view = MainMenuView(pygame)
         self._pause_menu_view = PauseMenuView(pygame)
         self._highscores_view = HighscoresView(pygame, score_registry)
@@ -38,7 +47,21 @@ class MenuRenderer:
         show_scores: bool,
         show_instructions: bool,
     ) -> None:
-        """Route drawing to Highscores, Instructions, or Main Menu view."""
+        """Route drawing to Highscores, Instructions, or Main Menu view.
+
+        The method selects the highscore, instructions, or main menu
+        view according to the supplied display flags.
+
+        Args:
+            screen: Pygame surface on which the view is drawn.
+            fonts: Fonts supplied by the application.
+            menu_index: Currently selected menu item index.
+            show_scores: Whether highscores overlay is active.
+            show_instructions: Whether instructions overlay is active.
+
+        Returns:
+            None.
+        """
         if show_scores:
             self._highscores_view.draw(screen)
             return
@@ -55,7 +78,16 @@ class MenuRenderer:
         fonts: tuple[Any, Any, Any],
         pause_index: int,
     ) -> None:
-        """Route drawing to Pause Menu view."""
+        """Route drawing to Pause Menu view.
+
+        Args:
+            screen: Pygame surface on which the menu is drawn.
+            fonts: Fonts supplied by the application.
+            pause_index: Currently selected pause menu item index.
+
+        Returns:
+            None.
+        """
         self._pause_menu_view.draw(screen, pause_index)
 
 
