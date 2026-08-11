@@ -17,8 +17,9 @@ def place_items(
 ) -> dict[Position, Item]:
     """Create the collectibles for the current level.
 
-    Pac-Gums are placed on random walkable cells. One Super Pac-Gum is
-    placed at each ghost home.
+    Pac-Gums are placed on random walkable cells. The player spawn
+    is reserved, while each ghost home receives a Super Pac-Gum.
+    Decorative ``42`` cells are never used.
 
     Args:
         session: Active game session.
@@ -30,17 +31,26 @@ def place_items(
     """
     assert session.maze is not None
 
-    candidates: list[Position] = []
-    reserved_positions = {player_spawn, *ghost_homes}
+    maze = session.maze
 
-    for y in range(session.maze.height):
-        for x in range(session.maze.width):
+    reserved_positions = {
+        player_spawn,
+        *ghost_homes,
+    }
+
+    candidates: list[Position] = []
+
+    for y in range(maze.height):
+        for x in range(maze.width):
             position = Position(x, y)
 
-            if (
-                position in reserved_positions
-                or session.maze.is_42_art(position)
-            ):
+            if position in reserved_positions:
+                continue
+
+            if maze.is_42_art(position):
+                continue
+
+            if not maze.neighbours(position):
                 continue
 
             candidates.append(position)
@@ -52,7 +62,11 @@ def place_items(
     )
 
     level = session._config.levels[session.level_index]
-    count = max(level.pacgum, minimum)
+
+    count = min(
+        max(level.pacgum, minimum),
+        len(candidates),
+    )
 
     items = {
         position: Item(
@@ -63,9 +77,13 @@ def place_items(
     }
 
     for home in ghost_homes:
-        items[home] = Item(
-            kind=ItemKind.SUPER_PACGUM,
-            points=session._config.points_per_super_pacgum,
-        )
+        if (
+            maze.contains(home)
+            and not maze.is_42_art(home)
+        ):
+            items[home] = Item(
+                kind=ItemKind.SUPER_PACGUM,
+                points=session._config.points_per_super_pacgum,
+            )
 
     return items
