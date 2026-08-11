@@ -11,9 +11,17 @@ INSTRUCTIONS_BG_PATH = BG_DIR / "background_instructions.png"
 
 
 class InstructionsView(BaseMenuView):
-    """Render game instructions and cheat keys panel."""
+    """Render gameplay instructions and available cheat controls."""
 
     def __init__(self, pygame: Any) -> None:
+        """Initialize instructions view and load icons.
+
+        Args:
+            pygame: Pygame module instance.
+
+        Returns:
+            None.
+        """
         super().__init__(pygame)
         self._instructions_bg = self._load_image(
             INSTRUCTIONS_BG_PATH,
@@ -29,7 +37,17 @@ class InstructionsView(BaseMenuView):
         self._cheats_logo = self._load_icon("cheats_logo.png")
 
     def draw(self, screen: Any) -> None:
-        """Draw instructions card frame, icons, rules text, and cheat codes."""
+        """Draw instructions card frame, icons, rules text, and cheat commands
+
+        The view displays movement instructions, gameplay rules,
+        available cheat keys, and a navigation hint.
+
+        Args:
+            screen: Pygame surface on which the instructions are drawn.
+
+        Returns:
+            None.
+        """
         sw, sh = screen.get_width(), screen.get_height()
 
         self._render_bg(screen, self._instructions_bg)
@@ -37,11 +55,11 @@ class InstructionsView(BaseMenuView):
             screen,
             self._logo_instructions,
             "GAME INSTRUCTIONS",
-            height_ratio=0.16,  # <--- Size
-            y_ratio=0.135,       # <--- Position
+            height_ratio=0.16,
+            y_ratio=0.135,
         )
 
-        # Dynamic card sizes (78% width and 68% height of the window)
+        # Dynamic card sizes
         card_w = max(550, int(sw * 0.5))
         card_h = max(420, int(sh * 0.6))
         card_rect = self._pygame.Rect(0, 0, card_w, card_h)
