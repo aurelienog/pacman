@@ -12,6 +12,14 @@ class MazeRenderer:
     """Draw maze corridors, walls, and 42 art tiles."""
 
     def __init__(self, pygame: Any) -> None:
+        """Initialize the maze renderer.
+
+        Args:
+            pygame: Pygame module instance.
+
+        Returns:
+            None.
+        """
         self._pygame = pygame
 
     def draw(
@@ -22,7 +30,18 @@ class MazeRenderer:
         top: int,
         cell: int,
     ) -> None:
-        """Draw maze wall bitmasks and reserved 42 tiles."""
+        """Draw maze wall bitmasks and reserved 42 tiles.
+
+        Args:
+            screen: Pygame display surface.
+            maze: Current domain Maze instance.
+            left: Left pixel offset of the maze grid.
+            top: Top pixel offset of the maze grid.
+            cell: Size of a single grid cell in pixels.
+
+        Returns:
+            None.
+        """
         for y, row in enumerate(maze.cells):
             for x, walls in enumerate(row):
                 px, py = left + x * cell, top + y * cell
