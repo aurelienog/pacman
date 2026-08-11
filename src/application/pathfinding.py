@@ -14,8 +14,10 @@ def nearest_walkable(
 ) -> Position:
     """Return the nearest traversable position.
 
-    Starting from ``start``, perform a breadth-first search until a
-    position with at least one accessible neighbour is found.
+    If ``start`` is outside the maze, it is first clamped to the
+    nearest position inside the maze. A breadth-first search is then
+    performed until a position with at least one accessible neighbour
+    is found.
 
     Args:
         maze: Maze to search.
@@ -24,10 +26,16 @@ def nearest_walkable(
     Returns:
         The nearest traversable position.
     """
-    if not maze.contains(start):
+    if maze.width == 0 or maze.height == 0:
         return start
-    queue: deque[Position] = deque([start])
-    visited: set[Position] = {start}
+
+    clamped = Position(
+        max(0, min(start.x, maze.width - 1)),
+        max(0, min(start.y, maze.height - 1)),
+    )
+
+    queue: deque[Position] = deque([clamped])
+    visited: set[Position] = {clamped}
 
     while queue:
         position = queue.popleft()
@@ -50,7 +58,7 @@ def nearest_walkable(
                 visited.add(next_position)
                 queue.append(next_position)
 
-    return start
+    return clamped
 
 
 def find_next_move(

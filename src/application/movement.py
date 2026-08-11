@@ -7,8 +7,16 @@ from typing import TYPE_CHECKING
 from .collisions import handle_collisions
 from .ghost_ai import GhostAI
 from .level_loader import complete_level
-from .pathfinding import find_next_move, random_walkable
-from ..domain import GhostMode, ItemKind
+from .pathfinding import find_next_move, manhattan_distance
+from ..domain import (
+    Direction,
+    Maze,
+    Ghost,
+    GhostMode,
+    ItemKind,
+    Player,
+    Position,
+)
 
 if TYPE_CHECKING:
     from .game_session import GameSession
@@ -83,21 +91,15 @@ def move_ghosts(session: GameSession) -> None:
     assert session.player is not None
 
     for ghost in session.ghosts:
-
         if ghost.mode is GhostMode.RESPAWNING:
             continue
 
         ghost.prev_position = ghost.position
 
         if ghost.mode is GhostMode.FRIGHTENED:
-            random_target = random_walkable(
-                session.maze,
-                session._random,
-            )
-
-            next_move = find_next_move(
+            next_move = frightened_move(
                 ghost,
-                random_target,
+                session.player,
                 session.maze,
             )
         else:
@@ -107,6 +109,7 @@ def move_ghosts(session: GameSession) -> None:
                 session.ghosts,
                 session.maze,
             )
+
             next_move = find_next_move(
                 ghost,
                 target,
@@ -119,3 +122,36 @@ def move_ghosts(session: GameSession) -> None:
         ghost.direction, ghost.position = next_move
 
     handle_collisions(session)
+
+
+def frightened_move(
+    ghost: Ghost,
+    player: Player,
+    maze: Maze,
+) -> tuple[Direction, Position] | None:
+    """Choose the legal move that maximizes distance from the player.
+
+    When a ghost is frightened, it should move away from the player
+    rather than selecting a random destination.
+
+    Args:
+        ghost: Frightened ghost.
+        player: Current player.
+        maze: Current maze.
+
+    Returns:
+        The direction and destination that maximize Manhattan distance
+        from the player, or None if no movement is possible.
+    """
+    moves = maze.neighbours(ghost.position)
+
+    if not moves:
+        return None
+
+    return max(
+        moves,
+        key=lambda move: manhattan_distance(
+            move[1],
+            player.position,
+        ),
+    )
