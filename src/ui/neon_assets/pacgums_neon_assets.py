@@ -12,6 +12,14 @@ class PacgumsSpriteAtlas:
     """Slice and render pacgums and static corner-matched super-pacgums."""
 
     def __init__(self, pygame: Any) -> None:
+        """Initialize pacgum atlas loader and slice subsurface frames.
+
+        Args:
+            pygame: Pygame module instance.
+
+        Returns:
+            None.
+        """
         self._pygame = pygame
         self._path = self._find_atlas_path()
         self._frames: list[list[Any]] = []
@@ -36,7 +44,11 @@ class PacgumsSpriteAtlas:
                 self._frames = []
 
     def available(self) -> bool:
-        """Return True if atlas image file exists and loaded successfully."""
+        """Check if utils atlas image file exists and loaded successfully.
+
+        Returns:
+            True if atlas frames are available, else False.
+        """
         return self._path is not None and len(self._frames) == 2
 
     def draw_item(
@@ -49,8 +61,23 @@ class PacgumsSpriteAtlas:
         maze_w: int,
         maze_h: int,
     ) -> None:
-        """Draw pacgum or static colored super-pacgum
-        matching the ghost corner."""
+        """Draw pacgum or static colored super-pacgum.
+
+        Normal pacgums use the fixed pacgum frame. Super-pacgums use a
+        static color selected according to the item's maze quadrant.
+
+        Args:
+            screen: Pygame display surface.
+            center: (x, y) center pixel coordinate.
+            cell: Size of a single grid cell in pixels.
+            kind: ItemKind enum (PACGUM or SUPER_PACGUM).
+            position: Position object for corner color matching.
+            maze_w: Total maze width in cells.
+            maze_h: Total maze height in cells.
+
+        Returns:
+            None.
+        """
         if not self.available():
             return
 
@@ -83,6 +110,11 @@ class PacgumsSpriteAtlas:
 
     @staticmethod
     def _find_atlas_path() -> Path | None:
+        """Search for utils_sprite_atlas.png in assets subdirectories.
+
+        Returns:
+            Path object if found, otherwise None.
+        """
         possible = [
             Path(__file__).resolve().parents[3]
             / "assets"
