@@ -12,8 +12,18 @@ def center_text(
     color: tuple[int, int, int],
     y: int,
 ) -> Any:
-    """Render and draw centered text horizontally at height y.
-    Returns text rect."""
+    """Render and draw centered text horizontally at a given height.
+
+    Args:
+        screen: Pygame display surface.
+        font: Loaded font object used for rendering.
+        value: Text string to display.
+        color: RGB color tuple for the text.
+        y: Vertical center coordinate for the text.
+
+    Returns:
+        The rectangle bounding the rendered text.
+    """
     text = font.render(value, True, color)
     rect = text.get_rect(center=(screen.get_width() // 2, y))
     screen.blit(text, rect)
@@ -27,7 +37,18 @@ def center_float(
     top: int,
     cell: int,
 ) -> tuple[int, int]:
-    """Convert grid float coordinates to screen pixel coordinates."""
+    """Convert grid float coordinates to screen pixel coordinates.
+
+    Args:
+        x: Horizontal grid position.
+        y: Vertical grid position.
+        left: Left offset of the grid on screen in pixels.
+        top: Top offset of the grid on screen in pixels.
+        cell: Size of a single grid cell in pixels.
+
+    Returns:
+        Tuple of (x, y) screen pixel coordinates for the cell center.
+    """
     return int(left + x * cell + cell / 2.0), int(top + y * cell + cell / 2.0)
 
 
@@ -39,7 +60,19 @@ def draw_line(
     pygame: Any,
     width: int = 3,
 ) -> None:
-    """Draw a simple wall line."""
+    """Draw a simple straight line on the screen.
+
+    Args:
+        screen: Pygame display surface.
+        start: Starting (x, y) pixel coordinate.
+        end: Ending (x, y) pixel coordinate.
+        color: RGB color tuple for the line.
+        pygame: Pygame module instance.
+        width: Line thickness in pixels.
+
+    Returns:
+        None.
+    """
     pygame.draw.line(screen, color, start, end, width)
 
 
@@ -50,7 +83,18 @@ def draw_circle(
     color: tuple[int, int, int],
     pygame: Any,
 ) -> None:
-    """Draw a simple filled circle."""
+    """Draw a simple filled circle on the screen.
+
+    Args:
+        screen: Pygame display surface.
+        center: Center (x, y) pixel coordinate.
+        radius: Radius of the circle in pixels.
+        color: RGB color tuple for the circle.
+        pygame: Pygame module instance.
+
+    Returns:
+        None.
+    """
     pygame.draw.circle(screen, color, center, radius)
 
 
@@ -60,7 +104,17 @@ def draw_button_box(
     pygame: Any,
     color: tuple[int, int, int] = (45, 130, 255),
 ) -> None:
-    """Draw a clean selection box around a selected menu item."""
+    """Draw a clean selection box around a selected menu item.
+
+    Args:
+        screen: Pygame display surface.
+        rect: Pygame Rect object defining the button boundary.
+        pygame: Pygame module instance.
+        color: RGB color tuple for the border box.
+
+    Returns:
+        None.
+    """
     pygame.draw.rect(screen, color, rect, width=2)
 
 
@@ -71,8 +125,18 @@ def draw_menu_card_frame(
     pygame: Any,
     pacman_icon: Any = None,
 ) -> None:
-    """Draw a clean menu panel frame with a simple border
-    and Pac-Man icon notch."""
+    """Draw a clean menu panel frame with a simple border and icon notch.
+
+    Args:
+        screen: Pygame display surface.
+        rect: Pygame Rect object defining the panel area.
+        border_color: RGB color tuple for the frame border.
+        pygame: Pygame module instance.
+        pacman_icon: Optional loaded icon surface drawn in the bottom notch.
+
+    Returns:
+        None.
+    """
     # Panel background
     pygame.draw.rect(screen, (8, 10, 24), rect)
     # Simple frame
