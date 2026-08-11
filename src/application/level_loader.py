@@ -1,4 +1,5 @@
 """Level creation and initialization."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -6,10 +7,15 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .game_session import GameSession
 
+from .contracts import GamePhase
 from .item_placement import place_items
 from .pathfinding import nearest_walkable
-from ..domain import Ghost, Player, Position, GhostPersonality
-from .contracts import GamePhase
+from ..domain import (
+    Ghost,
+    GhostPersonality,
+    Player,
+    Position,
+)
 
 
 def start_new_game(session: "GameSession") -> None:
@@ -35,7 +41,10 @@ def start_new_game(session: "GameSession") -> None:
     )
 
 
-def load_level(session: "GameSession", lives: int) -> None:
+def load_level(
+    session: "GameSession",
+    lives: int,
+) -> None:
     """Create and initialize the current level.
 
     Args:
@@ -65,17 +74,26 @@ def load_level(session: "GameSession", lives: int) -> None:
         session.maze.height // 2,
     )
 
-    player_spawn = nearest_walkable(session.maze, center)
+    player_spawn = nearest_walkable(
+        session.maze,
+        center,
+    )
 
     corners = [
         Position(0, 0),
         Position(session.maze.width - 1, 0),
         Position(0, session.maze.height - 1),
-        Position(session.maze.width - 1, session.maze.height - 1),
+        Position(
+            session.maze.width - 1,
+            session.maze.height - 1,
+        ),
     ]
 
     ghost_homes = [
-        nearest_walkable(session.maze, corner)
+        nearest_walkable(
+            session.maze,
+            corner,
+        )
         for corner in corners
     ]
 
@@ -93,13 +111,15 @@ def load_level(session: "GameSession", lives: int) -> None:
         player_spawn=player_spawn,
         ghost_homes=ghost_homes,
     )
-    # Reset timers
-    session.seconds_remaining = float(level.level_max_time)
+
+    session.seconds_remaining = float(
+        level.level_max_time
+    )
+
     session._player_elapsed = 0.0
     session._ghost_elapsed = 0.0
     session._frightened_remaining = 0.0
 
-    # Enter gameplay
     session.phase = GamePhase.PLAYING
     session.message = ""
 
@@ -124,6 +144,7 @@ def complete_level(session: "GameSession") -> None:
         return
 
     lives = session.player.lives
+
     session.level_index += 1
 
     load_level(
@@ -135,8 +156,14 @@ def complete_level(session: "GameSession") -> None:
 def _create_ghosts(
     ghost_homes: list[Position],
 ) -> list[Ghost]:
-    """Create the ghosts for a level."""
+    """Create the ghosts for a level.
 
+    Args:
+        ghost_homes: Spawn positions for the ghosts.
+
+    Returns:
+        Four ghosts with their assigned personalities.
+    """
     personalities = (
         GhostPersonality.BLINKY,
         GhostPersonality.INKY,
