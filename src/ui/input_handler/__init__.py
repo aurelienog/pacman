@@ -1,4 +1,4 @@
-"""Facade coordinator for UI input handlers."""
+"""Facade coordinator for UI input handlers across Pac-Man game states."""
 
 from __future__ import annotations
 
@@ -25,6 +25,18 @@ class InputHandler:
         pygame: Any,
         menu_renderer: MenuRenderer,
     ) -> None:
+        """Initialize state input handlers and dependencies.
+
+        Args:
+            session: Active game session used to dispatch input actions.
+            score_registry: Registry used by the end-screen handler to
+                save high scores.
+            pygame: Pygame module instance.
+            menu_renderer: Menu renderer providing menu hitboxes.
+
+        Returns:
+            None.
+        """
         self._session = session
         self._pygame = pygame
         self._menu_handler = MenuInputHandler(session, pygame, menu_renderer)
@@ -38,6 +50,7 @@ class InputHandler:
 
     @property
     def menu_index(self) -> int:
+        """Selected main menu button index."""
         return self._menu_handler.menu_index
 
     @menu_index.setter
@@ -46,6 +59,7 @@ class InputHandler:
 
     @property
     def show_scores(self) -> bool:
+        """Whether the highscores screen is displayed."""
         return self._menu_handler.show_scores
 
     @show_scores.setter
@@ -54,6 +68,7 @@ class InputHandler:
 
     @property
     def show_instructions(self) -> bool:
+        """Whether the instructions screen is displayed."""
         return self._menu_handler.show_instructions
 
     @show_instructions.setter
@@ -62,6 +77,7 @@ class InputHandler:
 
     @property
     def pause_index(self) -> int:
+        """Selected pause menu button index."""
         return self._pause_handler.pause_index
 
     @pause_index.setter
@@ -70,6 +86,7 @@ class InputHandler:
 
     @property
     def name(self) -> str:
+        """Player name input string."""
         return self._end_screen_handler.name
 
     @name.setter
@@ -78,6 +95,7 @@ class InputHandler:
 
     @property
     def saved(self) -> bool:
+        """Whether the highscore entry has been saved."""
         return self._end_screen_handler.saved
 
     @saved.setter
@@ -85,7 +103,17 @@ class InputHandler:
         self._end_screen_handler.saved = value
 
     def handle_event(self, event: Any) -> None:
-        """Route pygame event to corresponding sub-handler based on phase."""
+        """Route pygame event to corresponding sub-handler based on phase.
+
+        Quit, mouse movement, mouse clicks, and keyboard events are
+        dispatched according to the current game phase.
+
+        Args:
+            event: Pygame event object.
+
+        Returns:
+            None.
+        """
         if event.type == self._pygame.QUIT:
             self._session.dispatch(InputAction.QUIT)
             return
