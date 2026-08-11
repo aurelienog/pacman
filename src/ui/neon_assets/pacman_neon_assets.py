@@ -12,6 +12,14 @@ class PacmanSpriteAtlas:
     """Slice and render animated 4x3 Pac-Man sprite atlas."""
 
     def __init__(self, pygame: Any) -> None:
+        """Initialize Pac-Man atlas loader and slice subsurface frames.
+
+        Args:
+            pygame: Pygame module instance.
+
+        Returns:
+            None.
+        """
         self._pygame = pygame
         self._path = self._find_atlas_path()
         self._frames: list[list[Any]] = []
@@ -36,7 +44,11 @@ class PacmanSpriteAtlas:
                 self._frames = []
 
     def available(self) -> bool:
-        """Return True if atlas image file exists and loaded successfully."""
+        """Check if Pac-Man atlas image file exists and loaded successfully.
+
+        Returns:
+            True if 3 animation rows are available, else False.
+        """
         return self._path is not None and len(self._frames) == 3
 
     def draw_player(
@@ -46,7 +58,20 @@ class PacmanSpriteAtlas:
         cell: int,
         direction: Direction,
     ) -> None:
-        """Draw animated Pac-Man frame matching direction and time."""
+        """Draw animated Pac-Man frame matching direction and time.
+
+        The animation cycles through the mouth states while the selected
+        frame row determines the animation position.
+
+        Args:
+            screen: Pygame display surface.
+            center: (x, y) center pixel coordinate.
+            cell: Size of a single grid cell in pixels.
+            direction: Current movement direction.
+
+        Returns:
+            None.
+        """
         if not self.available():
             return
 
@@ -71,6 +96,11 @@ class PacmanSpriteAtlas:
 
     @staticmethod
     def _find_atlas_path() -> Path | None:
+        """Search for pacman_sprite_atlas.png in assets subdirectories.
+
+        Returns:
+            Path object if found, otherwise None.
+        """
         possible = [
             Path(__file__).resolve().parents[3]
             / "assets"
