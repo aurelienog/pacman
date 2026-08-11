@@ -10,7 +10,16 @@ class BaseInputHandler:
 
     @staticmethod
     def is_inside(pos: tuple[int, int], rect: Any) -> bool:
-        """Pure math point-in-bounds check
-        (100% MLX compatible, no rect.collidepoint)."""
+        """Check whether a point lies within a rectangular boundary.
+
+        Args:
+            pos: Mouse (x, y) coordinate tuple.
+            rect: Pygame Rect defining boundary bounds.
+
+        Returns:
+            True if position is within bounds, otherwise False.
+        """
         px, py = pos
-        return rect.left <= px <= rect.right and rect.top <= py <= rect.bottom
+        return bool(
+            rect.left <= px <= rect.right and rect.top <= py <= rect.bottom
+        )
