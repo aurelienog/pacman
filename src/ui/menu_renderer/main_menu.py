@@ -11,9 +11,17 @@ MENU_BG_PATH = BG_DIR / "background_menu.png"
 
 
 class MainMenuView(BaseMenuView):
-    """Render main menu options and calculate button hitboxes."""
+    """Render the main menu and maintain its mouse hitboxes."""
 
     def __init__(self, pygame: Any) -> None:
+        """Initialize main menu view and load background and logo assets.
+
+        Args:
+            pygame: Pygame module instance.
+
+        Returns:
+            None.
+        """
         super().__init__(pygame)
         self._menu_bg = self._load_image(MENU_BG_PATH, alpha=False)
         self._logo_main = self._load_icon("logo.png")
@@ -21,7 +29,18 @@ class MainMenuView(BaseMenuView):
 
     def draw(self, screen: Any, menu_index: int) -> None:
         """Draw main menu choices
-        and store button rects for mouse interaction."""
+        and store button rects for mouse interaction.
+
+        The selected item is highlighted, and the corresponding
+        rectangles are stored for mouse interaction.
+
+        Args:
+            screen: Pygame surface on which the menu is drawn.
+            menu_index: Index of the currently selected menu item.
+
+        Returns:
+            None.
+        """
         sw, sh = screen.get_width(), screen.get_height()
 
         self._render_bg(screen, self._menu_bg)
