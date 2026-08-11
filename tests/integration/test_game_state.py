@@ -1,1 +1,0 @@
-# Interacción Jugador-Fantasma-Ítems
