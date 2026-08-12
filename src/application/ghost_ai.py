@@ -179,7 +179,7 @@ class GhostAI:
         if manhattan_distance(
             ghost.position,
             player.position,
-        ) > 8:
+        ) > 3:
             return player.position
 
         target = Position(

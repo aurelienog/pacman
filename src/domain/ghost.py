@@ -2,7 +2,10 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 
 
-from .geometry import Position, Direction
+from .geometry import Position, Direction, Hitbox
+
+
+GHOST_HITBOX_SIZE = 0.8
 
 
 class GhostPersonality(Enum):
@@ -31,3 +34,7 @@ class Ghost:
     mode: GhostMode = GhostMode.CHASE
     respawn_remaining: float = 0.0
     personality: GhostPersonality = GhostPersonality.BLINKY
+    hitbox: Hitbox = Hitbox(
+        width=GHOST_HITBOX_SIZE,
+        height=GHOST_HITBOX_SIZE,
+    )

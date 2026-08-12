@@ -1,8 +1,8 @@
 from .config import Defaults, Limits, GameConfig, LevelConfig
 from .maze import Maze
-from .geometry import Direction, Position
-from .player import Player
-from .ghost import Ghost, GhostMode, GhostPersonality
+from .geometry import Direction, Position, Hitbox
+from .player import Player, PLAYER_HITBOX_SIZE
+from .ghost import Ghost, GhostMode, GhostPersonality, GHOST_HITBOX_SIZE
 from .item import Item, ItemKind
 
 __all__ = [
@@ -18,5 +18,8 @@ __all__ = [
     "GhostPersonality",
     "GhostMode",
     "Item",
-    "ItemKind"
+    "ItemKind",
+    "Hitbox",
+    "PLAYER_HITBOX_SIZE",
+    "GHOST_HITBOX_SIZE"
 ]

@@ -39,3 +39,16 @@ class Position:
         """Return the adjacent position in ``direction``."""
         dx, dy = direction.delta
         return Position(self.x + dx, self.y + dy)
+
+
+@dataclass(frozen=True)
+class Hitbox:
+    """Represent the collision bounds of an entity.
+
+    Attributes:
+        width: Width of the hitbox in maze-cell units.
+        height: Height of the hitbox in maze-cell units.
+    """
+
+    width: float
+    height: float
