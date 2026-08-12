@@ -15,28 +15,11 @@
   # Multilevel Configuration Array
   "levels": [
     {
-      "level_number": 1,
       "width": 15,
       "height": 15,
       "pacgum": 42,
       "seed": 42,
-      "level_max_time": 90
-    },
-    {
-      "level_number": 2,
-      "width": 17,
-      "height": 17,
-      "pacgum": 60,
-      "seed": 101,
       "level_max_time": 120
-    },
-    {
-      "level_number": 3,
-      "width": 19,
-      "height": 19,
-      "pacgum": 80,
-      "seed": 2024,
-      "level_max_time": 150
     }
   ]
 }
