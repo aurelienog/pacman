@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from src.domain import Direction
+from src.ui.draw_utils import scale_image
 
 
 class PacmanSpriteAtlas:
@@ -91,7 +92,7 @@ class PacmanSpriteAtlas:
 
         frame = self._frames[row][col]
         size = max(16, int(cell * 1.2))
-        scaled = self._pygame.transform.smoothscale(frame, (size, size))
+        scaled = scale_image(frame, (size, size), self._pygame)
         screen.blit(scaled, scaled.get_rect(center=center))
 
     @staticmethod

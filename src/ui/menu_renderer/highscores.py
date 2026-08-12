@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from src.scores import ScoreRegistry
-from src.ui.draw_utils import center_text, draw_menu_card_frame
+from src.ui.draw_utils import center_text, draw_menu_card_frame, scale_image
 from .base_menu import BG_DIR, BaseMenuView
 
 SCORES_BG_PATH = BG_DIR / "background_scores.png"
@@ -111,9 +111,10 @@ class HighscoresView(BaseMenuView):
 
             if is_top and self._crown_icon is not None:
                 icon_sz = max(18, int(row_h * 0.8))
-                scaled_icon = self._pygame.transform.smoothscale(
+                scaled_icon = scale_image(
                     self._crown_icon,
-                    (icon_sz, icon_sz)
+                    (icon_sz, icon_sz),
+                    self._pygame,
                 )
                 icon_rect = scaled_icon.get_rect(
                     center=(col_num_x - icon_sz // 2 - 8, cur_y + row_h // 4.5)

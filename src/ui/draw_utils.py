@@ -5,6 +5,59 @@ from __future__ import annotations
 from typing import Any
 
 
+_SCALE_CACHE: dict[tuple[int, int, int], Any] = {}
+
+
+def scale_image(
+    surface: Any,
+    size: tuple[int, int],
+    pygame: Any,
+) -> Any:
+    """Scale a surface with cached nearest-neighbor pixel resampling.
+
+    Resamples pixels directly without using high-level transformation
+    modules, ensuring compatibility with basic graphical primitives.
+
+    Args:
+        surface: Source Pygame Surface object to scale.
+        size: Target (width, height) pixel dimensions.
+        pygame: Pygame module instance.
+
+    Returns:
+        The scaled Pygame Surface object, or None if input is None.
+    """
+    if surface is None:
+        return None
+
+    target_width, target_height = size
+    source_width = surface.get_width()
+    source_height = surface.get_height()
+
+    if (source_width, source_height) == size:
+        return surface
+
+    cache_key = (id(surface), target_width, target_height)
+    cached = _SCALE_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+
+    scaled = pygame.Surface(
+        (target_width, target_height),
+        pygame.SRCALPHA,
+    )
+    for y in range(target_height):
+        source_y = y * source_height // target_height
+        for x in range(target_width):
+            source_x = x * source_width // target_width
+            scaled.set_at(
+                (x, y),
+                surface.get_at((source_x, source_y)),
+            )
+
+    _SCALE_CACHE[cache_key] = scaled
+    return scaled
+
+
 def center_text(
     screen: Any,
     font: Any,
@@ -149,9 +202,10 @@ def draw_menu_card_frame(
 
     if pacman_icon is not None:
         icon_size = 38
-        scaled_icon = pygame.transform.smoothscale(
+        scaled_icon = scale_image(
             pacman_icon,
-            (icon_size, icon_size)
+            (icon_size, icon_size),
+            pygame,
         )
         icon_rect = scaled_icon.get_rect(center=(cx, cy - 2))
         screen.blit(scaled_icon, icon_rect)

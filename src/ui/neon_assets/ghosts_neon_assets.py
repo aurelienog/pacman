@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from src.domain import Direction, GhostMode
+from src.ui.draw_utils import scale_image
 
 # ⚙️ VERTICAL GHOST OFFSET SETTING (in pixels)
 # A negative value (such as -2 or -4) raises the ghost up.
@@ -111,7 +112,7 @@ class GhostsSpriteAtlas:
             frame = atlas[row][col]
 
         size = max(16, int(cell * 1.2))
-        scaled = self._pygame.transform.smoothscale(frame, (size, size))
+        scaled = scale_image(frame, (size, size), self._pygame)
 
         # We apply height shift adjustment
         adjusted_center = (center[0], center[1] + GHOST_Y_OFFSET)

@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from src.application.contracts import Snapshot
-from src.ui.draw_utils import center_text
+from src.ui.draw_utils import center_text, scale_image
 from src.ui.neon_assets import (
     GhostsSpriteAtlas,
     PacgumsSpriteAtlas,
@@ -77,9 +77,10 @@ class GameRenderer(BaseGameView):
 
         # Background
         if self._game_bg is not None:
-            scaled_bg = self._pygame.transform.smoothscale(
+            scaled_bg = scale_image(
                 self._game_bg,
                 (sw, sh),
+                self._pygame,
             )
             screen.blit(scaled_bg, (0, 0))
         else:

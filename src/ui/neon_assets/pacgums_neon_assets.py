@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from src.domain import ItemKind, Position
+from src.ui.draw_utils import scale_image
 
 
 class PacgumsSpriteAtlas:
@@ -105,7 +106,7 @@ class PacgumsSpriteAtlas:
 
             size = max(14, int(cell * 0.85))
 
-        scaled = self._pygame.transform.smoothscale(frame, (size, size))
+        scaled = scale_image(frame, (size, size), self._pygame)
         screen.blit(scaled, scaled.get_rect(center=center))
 
     @staticmethod

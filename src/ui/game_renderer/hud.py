@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from src.application.contracts import Snapshot
-from src.ui.draw_utils import draw_line
+from src.ui.draw_utils import draw_line, scale_image
 from .base_game_view import BaseGameView
 
 
@@ -88,9 +88,10 @@ class HudView(BaseGameView):
         txt_lives = value_font.render(f" x {lives_count}", True, white_color)
 
         if self._pacman_icon:
-            ic_pm = self._pygame.transform.smoothscale(
+            ic_pm = scale_image(
                 self._pacman_icon,
                 (icon_sz, icon_sz),
+                self._pygame,
             )
             total_w = icon_sz + txt_lives.get_width()
             start_icon_x = cx2 - total_w // 2
@@ -124,9 +125,10 @@ class HudView(BaseGameView):
             white_color,
         )
         if self._level_icon:
-            ic_lvl = self._pygame.transform.smoothscale(
+            ic_lvl = scale_image(
                 self._level_icon,
                 (icon_sz, icon_sz),
+                self._pygame,
             )
             total_w = icon_sz + txt_lvl.get_width()
             start_icon_x = cx3 - total_w // 2
@@ -157,9 +159,10 @@ class HudView(BaseGameView):
         sec = max(0, int(snapshot.seconds_remaining))
         txt_time = value_font.render(f" {sec}", True, white_color)
         if self._timer_icon:
-            ic_tm = self._pygame.transform.smoothscale(
+            ic_tm = scale_image(
                 self._timer_icon,
                 (icon_sz, icon_sz),
+                self._pygame,
             )
             total_w = icon_sz + txt_time.get_width()
             start_icon_x = cx4 - total_w // 2

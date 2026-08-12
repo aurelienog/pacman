@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from src.ui.draw_utils import center_text
+from src.ui.draw_utils import center_text, scale_image
 
 BG_DIR = Path(__file__).resolve().parents[3] / "assets" / "backgrounds"
 LOGOS_DIR = Path(__file__).resolve().parents[3] / "assets" / "logos"
@@ -104,8 +104,10 @@ class BaseMenuView:
         """
         target_bg = bg_image if bg_image is not None else fallback_bg
         if target_bg is not None:
-            scaled_bg = self._pygame.transform.smoothscale(
-                target_bg, (screen.get_width(), screen.get_height())
+            scaled_bg = scale_image(
+                target_bg,
+                (screen.get_width(), screen.get_height()),
+                self._pygame,
             )
             screen.blit(scaled_bg, (0, 0))
         else:
@@ -146,9 +148,10 @@ class BaseMenuView:
                 target_w = int(sw * 0.85)
                 target_h = int(target_w / aspect)
 
-            scaled_logo = self._pygame.transform.smoothscale(
+            scaled_logo = scale_image(
                 logo_img,
                 (target_w, target_h),
+                self._pygame,
             )
             rect = scaled_logo.get_rect(center=(sw // 2, center_y))
             screen.blit(scaled_logo, rect)

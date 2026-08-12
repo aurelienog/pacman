@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from src.ui.draw_utils import center_text, draw_menu_card_frame
+from src.ui.draw_utils import center_text, draw_menu_card_frame, scale_image
 from .base_menu import BG_DIR, BaseMenuView
 
 INSTRUCTIONS_BG_PATH = BG_DIR / "background_instructions.png"
@@ -88,13 +88,15 @@ class InstructionsView(BaseMenuView):
         if self._pacman_icon and self._dots_icon:
             pm_sz = int(card_h * 0.08)
             dt_w, dt_h = int(card_w * 0.16), int(card_h * 0.08)
-            ic_pm = self._pygame.transform.smoothscale(
+            ic_pm = scale_image(
                 self._pacman_icon,
-                (pm_sz, pm_sz)
+                (pm_sz, pm_sz),
+                self._pygame,
             )
-            ic_dt = self._pygame.transform.smoothscale(
+            ic_dt = scale_image(
                 self._dots_icon,
-                (dt_w, dt_h)
+                (dt_w, dt_h),
+                self._pygame,
             )
             screen.blit(
                 ic_pm,
@@ -122,9 +124,10 @@ class InstructionsView(BaseMenuView):
         r2_y = start_y + row_step
         if self._ghosts_icon:
             gh_w, gh_h = int(card_w * 0.2), int(card_h * 0.10)
-            ic_gh = self._pygame.transform.smoothscale(
+            ic_gh = scale_image(
                 self._ghosts_icon,
-                (gh_w, gh_h)
+                (gh_w, gh_h),
+                self._pygame,
             )
             screen.blit(ic_gh, ic_gh.get_rect(center=(col_icon_x - 10, r2_y)))
 
@@ -141,9 +144,10 @@ class InstructionsView(BaseMenuView):
         r3_y = start_y + row_step * 2
         if self._super_pacgum_icon:
             sp_w, sp_h = int(card_w * 0.2), int(card_h * 0.10)
-            ic_sp = self._pygame.transform.smoothscale(
+            ic_sp = scale_image(
                 self._super_pacgum_icon,
-                (sp_w, sp_h)
+                (sp_w, sp_h),
+                self._pygame,
             )
             screen.blit(ic_sp, ic_sp.get_rect(center=(col_icon_x - 10, r3_y)))
 
@@ -164,9 +168,10 @@ class InstructionsView(BaseMenuView):
         r4_y = start_y + row_step * 3
         if self._timer_icon:
             tm_sz = int(card_h * 0.08)
-            ic_tm = self._pygame.transform.smoothscale(
+            ic_tm = scale_image(
                 self._timer_icon,
-                (tm_sz, tm_sz)
+                (tm_sz, tm_sz),
+                self._pygame,
             )
             screen.blit(ic_tm, ic_tm.get_rect(center=(col_icon_x - 10, r4_y)))
 
@@ -190,9 +195,10 @@ class InstructionsView(BaseMenuView):
 
         if self._cheats_logo:
             ch_w, ch_h = int(card_w * 0.22), int(card_h * 0.12)
-            ic_ch = self._pygame.transform.smoothscale(
+            ic_ch = scale_image(
                 self._cheats_logo,
-                (ch_w, ch_h)
+                (ch_w, ch_h),
+                self._pygame,
             )
             screen.blit(
                 ic_ch,

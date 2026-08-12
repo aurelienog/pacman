@@ -87,11 +87,6 @@ class PygameApplication:
         try:
             while self._session.phase is not GamePhase.EXIT:
                 for event in pygame.event.get():
-                    # 🖥️ Switch to full screen mode with F11
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_F11:
-                            pygame.display.toggle_fullscreen()
-
                     input_handler.handle_event(event)
 
                 self._session.update(clock.tick(60) / 1000.0)
