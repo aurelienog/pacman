@@ -101,7 +101,6 @@ Lines starting with `#` or `//` are stripped prior to JSON parsing.
   # Multilevel Array (At least 10 levels enforced automatically)
   "levels": [
     {
-      "level_number": 1,
       "width": 21,
       "height": 21,
       "pacgum": 42,
@@ -138,7 +137,10 @@ The persistent highscore system is encapsulated within the `ScoreRegistry` and b
 Maze generation relies on the assigned external `A-Maze-ing` wheel package without modifying its internal source code.
 
 ### Integration Adapter (`AmazingMazeFactory`)
-- The game engine interacts with `MazeFactory` via a clean adapter port (`AmazingMazeFactory`).
+- The application interacts with the maze generator through the
+  `MazeFactory` port.
+- `AmazingMazeFactory` implements this port and adapts the assigned
+  `A-Maze-ing` package to the application's `Maze` domain model.
 - **Corridor Compatibility**: Mazes are generated with `perfect=False` to produce Pac-Man-compatible loops and multiple corridors.
 - **Reproducibility**: The first level uses a deterministic fixed seed (e.g., `42`), while subsequent levels generate randomized seeds.
 - **Decorative 42 Pattern**: Cells belonging to the decorative `42` central mark (wall bitmask `15`) are flagged as un-walkable obstacles; no collectible items spawn inside them.
@@ -153,14 +155,38 @@ Maze generation relies on the assigned external `A-Maze-ing` wheel package witho
 - Movement coordinates are interpolated smoothly between logical grid cells (`_player_visual_position`) for fluid rendering.
 
 ### Ghost AI & Behavioral States
-Ghosts move autonomously using Breadth-First Search (BFS) shortest-path pathfinding, operating in three distinct modes:
+
+Ghosts move autonomously and their personality determine their targets in Chase mode. BFS is then used to select a shortest path towards the chosen target.  
+In Frightened mode, ghosts instead select legal moves that maximize
+their distance from the player.
+
 1. **Chase Mode**: Each ghost follows a distinct targeting strategy:
    - **Blinky (Red)**: Targets Pac-Man's exact tile.
    - **Pinky (Pink)**: Targets 4 tiles ahead of Pac-Man's direction.
    - **Inky (Cyan)**: Uses Blinky's position and Pac-Man's tile to calculate a mirrored vector target.
    - **Clyde (Orange)**: Chases Pac-Man when far away, but retreats to his corner when within 8 tiles.
-2. **Frightened Mode**: Triggered by eating a Super Pacgum. Ghosts turn blue, slow down, move randomly, and become edible for bonus points.
+2. **Frightened Mode**: Triggered by eating a Super Pacgum. Ghosts become edible and select legal moves that maximize their distance from the player.
 3. **Respawning Mode**: When eaten, a ghost turns into eyes and returns to its home corner before re-entering Chase mode.
+
+### Game Progression
+
+- The player starts with 3 lives.
+- A collision with a non-frightened ghost removes one life.
+- The player respawns at the level spawn position.
+- Ghosts return to their home positions after a life is lost.
+- The game enters Game Over when the player loses the last life.
+- Completing all configured levels results in Victory.
+- Score and remaining lives are preserved between levels.
+
+### End of Game
+
+When the player loses all lives, the Game Over screen displays the final
+score and allows the player to enter a name for the highscore table.
+
+When all levels are completed, the Victory screen displays the final score
+and provides the same highscore entry flow.
+
+After either outcome, the player can return to the main menu.
 
 ### Cheat Mode (Peer Review Tools)
 Dedicated hotkeys allow reviewers to easily test game mechanics:
@@ -180,32 +206,265 @@ To comply with 42 evaluation rules regarding MiniLibX equivalence:
 
 ## General Software Architecture
 
-The project follows a strict **Hexagonal / Clean Architecture** pattern, enforcing a complete separation between the core simulation engine, domain models, adapters, and UI presentation.
+The project uses a modular architecture inspired by **Hexagonal / Clean Architecture** principles.
+The main design goal is to keep the game rules independent from Pygame, the external maze generator, and persistent storage.  
+The architecture is divided into five main areas:
+
+- `domain/`: core game entities and value objects.
+- `application/`: game rules, use cases and simulation orchestration.
+- `adapters/`: integration with external systems such as configuration,
+  maze generation and JSON persistence.
+- `scores/`: highscore validation and score management.
+- `ui/`: Pygame presentation and user input handling.
+
+### Project structure
 
 ```text
-pac-man/
-├── config.json
-├── highscores.json
-├── Makefile
-├── pac-man.py
-└── src/
-    ├── domain/               # Pure business models (Maze, Player, Ghost, Position)
-    ├── application/          # Use cases & game loop orchestration (GameSession, AI, Collisions)
-    ├── adapters/             # External integration (ConfigLoader, AmazingMazeFactory)
-    ├── scores/               # Highscore domain and JsonRepository
-    └── ui/                   # Modular presentation layer
-        ├── draw_utils.py     # Clean drawing primitives
-        ├── input_handler/    # Menu, Pause, Gameplay & EndScreen input sub-handlers
-        ├── menu_renderer/   # Modular Main, Pause, Highscore & Instruction views
-        ├── game_renderer/   # Modular HUD, Maze, Items & Entities renderers
-        └── neon_assets/     # Sprite atlas loaders for Pac-Man, Ghosts & Items
+src/
+├── domain/               # Pure business models (Maze, Player, Ghost, Position)
+│   ├── config.py
+│   ├── geometry.py
+│   ├── ghost.py
+│   ├── item.py
+│   ├── maze.py
+│   └── player.py
+│
+├── application/          # Use cases & game loop orchestration (GameSession, AI, Collisions)
+│   ├── game_session.py
+│   ├── contracts.py
+│   ├── input.py
+│   ├── level_loader.py
+│   ├── update.py
+│   ├── movement.py
+│   ├── collisions.py
+│   ├── ghost_ai.py
+│   ├── pathfinding.py
+│   ├── item_placement.py
+│   ├── interpolation.py
+│   └── snapshot.py
+│
+├── adapters/             # External integration (ConfigLoader, AmazingMazeFactory)
+│   ├── config_loader.py
+│   ├── amazing_maze_factory.py
+│   └── json_highscore_repository.py
+│
+├── scores/               # Highscore domain and JsonRepository
+│   ├── highscore.py
+│   ├── highscore_repository.py
+│   └── score_registry.py
+│
+└── ui/
+    ├── pygame_app.py     # Modular presentation layer
+    ├── draw_utils.py     
+    ├── input_handler/    
+    ├── menu_renderer/    
+    ├── game_renderer/    
+    └── neon_assets/      
+
+```
+#### Core class relationships
+
+`GameSession` is the central application object. It owns the current
+game state and coordinates the main gameplay use cases.
+
+The main relationships are:
+
+- `GameSession` uses a `MazeFactory` to create the current `Maze`.
+- `GameSession` owns the current `Player`, `Ghost` instances and collectible
+  `Item`s.
+- `level_loader` initializes `GameSession` for a new level.
+- `input` translates `InputAction` commands into changes to `GameSession`.
+- `movement` updates the positions of the `Player` and `Ghost`s.
+- `collisions` resolves interactions between the player, ghosts and items.
+- `ghost_ai` determines ghost targets, while `pathfinding` calculates legal
+  shortest paths through the maze.
+- `snapshot` exposes the current state to the UI without allowing the
+  renderer to modify the simulation.
+- The UI therefore depends on the application state, while the application
+  does not depend on the rendering implementation.
+
+#### Application layer
+
+The `application/` package contains the main game logic and coordinates the
+different systems involved in each simulation step.
+
+| Module              | Responsibility                                                                                   |
+| ------------------- | ------------------------------------------------------------------------------------------------ |
+| `game_session.py`   | Owns the current game state and coordinates the game lifecycle.                                  |
+| `contracts.py`      | Defines application-level states and input commands such as `GamePhase` and `InputAction`.       |
+| `input.py`          | Translates player actions into changes to the active `GameSession`.                              |
+| `level_loader.py`   | Starts games, creates levels, initializes player/ghost positions and advances level progression. |
+| `update.py`         | Updates timers and time-dependent gameplay state.                                                |
+| `movement.py`       | Applies player and ghost movement rules.                                                         |
+| `collisions.py`     | Resolves player/ghost and collectible collisions.                                                |
+| `ghost_ai.py`       | Calculates the individual targeting strategies of Blinky, Pinky, Inky and Clyde.                 |
+| `pathfinding.py`    | Provides grid navigation and shortest-path movement using BFS.                                   |
+| `item_placement.py` | Places Pac-Gums and Super Pac-Gums while respecting reserved and non-walkable cells.             |
+| `interpolation.py`  | Calculates visual positions between logical grid cells for smooth rendering.                     |
+| `snapshot.py`       | Builds the read-only state consumed by the presentation layer.                                   |
+
+
+#### Domain layer
+
+The `domain/` package contains the core game entities and value objects.
+
+- `Player` represents the player state, position, direction and lives.
+- `Ghost` represents a ghost, including its personality and current mode.
+- `Maze` represents the generated grid and its movement/wall rules.
+- `Position` and `Direction` represent spatial and movement concepts.
+- `Item` represents Pac-Gums and Super Pac-Gums.
+- `GameConfig` and `LevelConfig` represent validated game configuration.
+
+The domain does not depend on Pygame or the external maze generator.
+
+
+#### Adapters
+
+The adapter layer isolates external dependencies from the application:
+
+- `ConfigLoader` converts the external JSON configuration into validated
+domain configuration.
+- `AmazingMazeFactory` adapts the assigned A-Maze-ing package to the
+application's `MazeFactory` interface.
+- `JsonHighscoreRepository` provides persistent highscore storage.
+
+This means that the application does not need to know how the external
+generator or JSON files are implemented.
+
+
+#### Scores
+
+The `scores/` package contains the highscore rules independently from the
+file format.
+
+`ScoreRegistry` validates scores and player names, keeps the top 10 entries
+and delegates persistence to the repository abstraction.
+
+
+#### UI layer
+
+The `ui/` package is responsible only for presentation and user interaction.
+
+It is intentionally kept separate from the game rules:
+
+- `input_handler/` converts Pygame events into application `InputActions`.
+- `menu_renderer/` renders menus and end screens.
+- `game_renderer/` renders the maze, player, ghosts, items and HUD.
+- `neon_assets/` loads and manages graphical assets.
+- `pygame_app.py` owns the Pygame application loop and connects the UI to the application layer.
+
+The UI does not implement game rules such as ghost targeting, collision resolution or level progression.
+
+### Main data flow
+
 ```
 
-### Data Flow & Decoupling
-- **`InputAction`**: The UI translates keyboard and mouse events into renderer-independent `InputAction` commands dispatched to `GameSession`.
-- **`Snapshot`**: The engine exposes an immutable, read-only `Snapshot` of the current world state per frame. The renderer never modifies domain state directly.
+                         PAC-MAN ARCHITECTURE
+                         ====================
 
----
+
+┌──────────────────────────────────────────────────────────────────────┐
+│                              UI / PYGAME                             │
+│                                                                      │
+│  pygame_app.py                                                       │
+│       │                                                              │
+│       ├── input_handler/                                             │
+│       │     ├── menu input                                           │
+│       │     ├── gameplay input                                       │
+│       │     ├── pause input                                          │
+│       │     └── end-screen input                                     │
+│       │                                                              │
+│       ├── menu_renderer/                                             │
+│       ├── game_renderer/                                             │
+│       ├── draw_utils.py                                              │
+│       └── neon_assets/                                               │
+│                                                                      │
+│       │  Pygame events / rendering                                   │
+└───────┼──────────────────────────────────────────────────────────────┘
+        │
+        │ InputAction
+        ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│                         APPLICATION LAYER                            │
+│                    GAME RULES & ORCHESTRATION                        │
+│                                                                      │
+│  ┌───────────────────────┐                                           │
+│  │      GameSession      │◄──────────── main application state       │
+│  │                       │                                           │
+│  │  lifecycle / phases   │                                           │
+│  │  score / lives        │                                           │
+│  │  level progression    │                                           │
+│  │  dispatch(InputAction)│                                           │
+│  └───────────┬───────────┘                                           │
+│              │                                                       │
+│      ┌───────┼────────┬──────────┬──────────┬──────────┐             │
+│      ▼       ▼        ▼          ▼          ▼          ▼             │
+│  movement  collisions ghost_ai  pathfinding update  level_loader     │
+│      │       │        │          │          │          │             │
+│      │       │        │          │          │          └─ levels     │
+│      │       │        └──────────┘          │                        │
+│      │       │          BFS / targets       │                        │
+│      │       │                              │                        │
+│      └───────┴──────────────────────────────┘                        │
+│                                                                      │
+│  item_placement     interpolation      snapshot                      │
+│       │                  │                │                          │
+│       └──── gameplay ────┘                └── read-only game state ──┼──► UI
+│                                                                      │
+└──────────────────────────────┬───────────────────────────────────────┘
+                               │
+                               │ operates on
+                               ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│                            DOMAIN LAYER                              │
+│                       CORE GAME MODELS                               │
+│                                                                      │
+│   Player        Ghost        Maze        Item                        │
+│      │            │           │           │                          │
+│      └────────────┴───────────┴───────────┘                          │
+│                           │                                          │
+│                  Position / Direction                                │
+│                                                                      │
+│              GameConfig / LevelConfig                                │
+│                                                                      │
+│       No Pygame • No JSON • No A-Maze-ing dependency                 │
+└──────────────────────────────────────────────────────────────────────┘
+
+
+          External dependencies are isolated behind adapters
+                              │
+                 ┌────────────┴────────────┐
+                 │                         │
+                 ▼                         ▼
+┌─────────────────────────────┐  ┌─────────────────────────────────────┐
+│          ADAPTERS           │  │               SCORES                │
+│                             │  │                                     │
+│ ConfigLoader                │  │ ScoreRegistry                       │
+│ AmazingMazeFactory          │  │ Highscore                           │
+│ JsonHighscoreRepository     │  │ HighscoreRepository                 │
+│                             │  │                                     │
+│ config.json                 │  │ highscores.json                     │
+│ A-Maze-ing package          │  │                                     │
+└─────────────────────────────┘  └─────────────────────────────────────┘
+```
+
+#### Snapshot-based rendering
+
+The application produces a read-only Snapshot representing the current game state.
+
+```
+GameSession
+     │
+     │ simulation
+     ▼
+Snapshot
+     │
+     ▼
+Game Renderer
+```
+
+The renderer consumes this state without directly modifying the game model.
+This keeps rendering concerns separate from gameplay logic.
 
 ## Project Management
 
