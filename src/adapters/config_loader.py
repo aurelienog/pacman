@@ -59,9 +59,9 @@ class ConfigLoader:
             content = path.read_text(encoding="utf-8")
             raw = json.loads(cls._strip_comments(content))
 
-        except (json.JSONDecodeError) as error:
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
             LOGGER.warning(
-                "Could not parse configuration (%s). Using defaults.",
+                "Could not read configuration (%s). Using defaults.",
                 error,
             )
             return {}

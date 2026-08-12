@@ -1,11 +1,15 @@
+"""JSON-backed persistence for high scores."""
+
 from ..scores import Highscore, HighscoreRepository
 
 from pathlib import Path
 import json
+import re
 import logging
-
+from src.scores import MAX_SCORE
 
 LOGGER = logging.getLogger(__name__)
+NAME_PATTERN = re.compile(r"[A-Za-z0-9 ]{1,10}")
 
 
 class JsonHighscoreRepository(HighscoreRepository):
@@ -20,12 +24,14 @@ class JsonHighscoreRepository(HighscoreRepository):
         self._path = Path(filename)
 
     def load(self) -> list[Highscore]:
-        """Load high scores from disk.
+        """Load valid high scores from the JSON file.
+
+        Invalid or malformed entries are ignored and logged. If the
+        file cannot be read or contains invalid JSON, an empty list
+        is returned.
 
         Returns:
-            A list of ``Highscore`` objects. If the file does not exist,
-            cannot be read, or contains invalid JSON, an empty list is
-            returned.
+            A list of valid high scores sorted by descending score.
         """
         try:
             with self._path.open("r", encoding="utf-8") as file:
@@ -54,23 +60,29 @@ class JsonHighscoreRepository(HighscoreRepository):
             name = entry.get("name")
             score = entry.get("score")
 
-            if not isinstance(name, str):
-                LOGGER.warning("Ignoring entry with invalid name.")
+            if not self._is_valid_entry(name, score):
+                LOGGER.warning("Ignoring invalid high-score entry.")
                 continue
 
-            if isinstance(score, bool) or not isinstance(score, int):
-                LOGGER.warning("Ignoring entry with invalid score.")
-                continue
+            assert isinstance(name, str)
+            assert isinstance(score, int)
 
             scores.append(Highscore(
                 name=name.strip(),
                 score=score)
             )
 
-        return scores
+        return sorted(
+            scores,
+            key=lambda highscore: highscore.score,
+            reverse=True)
 
     def save(self, scores: list[Highscore]) -> None:
-        """Write high scores to disk.
+        """Persist high scores to the JSON file.
+
+        The parent directory is created automatically when necessary.
+        If the file cannot be written, a warning is logged and the
+        application continues without raising the filesystem error.
 
         Args:
             scores: High scores to persist.
@@ -100,3 +112,30 @@ class JsonHighscoreRepository(HighscoreRepository):
             LOGGER.warning("Could not save high scores (%s).",
                            error,
                            )
+
+    @staticmethod
+    def _is_valid_entry(name: object, score: object) -> bool:
+        """Validate an entry loaded from external JSON data.
+
+        This validation protects the application from malformed or
+        manually modified high-score files before creating domain
+        objects.
+
+        Args:
+            name: Candidate player name loaded from JSON.
+            score: Candidate score loaded from JSON.
+
+        Returns:
+            ``True`` if both the name and score satisfy the repository
+            input constraints, otherwise ``False``.
+        """
+        if not isinstance(name, str):
+            return False
+        if not NAME_PATTERN.fullmatch(name.strip()):
+            return False
+        return (
+            not isinstance(score, bool)
+            and isinstance(score, int)
+            and score >= 0
+            and score <= MAX_SCORE
+        )
