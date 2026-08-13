@@ -48,10 +48,41 @@ The goal of this project is to build a fully functional arcade Pac-Man game with
 ## Instructions
 
 ### Prerequisites
+- Linux OS (for pre-built binary execution)
 - Python 3.10 or later
 - `pip` or any modern Python package manager (`uv`, `venv`)
 
 ### Installation & Setup
+
+### Option A: Running the Standalone Executable (Itch.io Release Build)
+
+A pre-packaged, standalone Linux executable is available for demonstration and evaluation on our private Itch.io page. No Python or Pygame installation is required for this build.
+
+1. **Download the Release Archive**:
+   Download `pacman-linux.zip` from our Itch.io project page:
+   👉 **[Pac-Man Itch.io Private Release Page](https://itch.io/)** *(Unlisted / Private evaluation build)*
+
+2. **Extract the Package**:
+   Unzip the release archive in your terminal:
+   ```bash
+   unzip pacman-linux.zip -d pacman-release
+   cd pacman-linux
+   ```
+
+3. **Ensure Execution Permissions**:
+   ```bash
+   chmod +x pacman-linux
+   ```
+
+4. **Execute the Binary**:
+   Run the standalone executable by passing the configuration file:
+   ```bash
+   ./pacman-linux config.json
+   ```
+
+---
+
+### Option B: Running from Source Code (Development Mode)
 
 1. **Clone the repository**:
    ```bash
@@ -74,6 +105,19 @@ The goal of this project is to build a fully functional arcade Pac-Man game with
    make run
    ```
 
+4. **Packaging a New Release Build**:
+   To generate a new standalone Linux binary and Itch.io release ZIP package:
+   ```bash
+   make package
+   ```
+   or
+   ```bash
+   make build
+   ```
+   The generated package will be saved at `dist/pacman-linux.zip`.
+
+---
+
 ### Makefile Targets
 
 | Command | Description |
@@ -82,8 +126,10 @@ The goal of this project is to build a fully functional arcade Pac-Man game with
 | `make run` | Execute the main game entry point with `config.json`. |
 | `make debug` | Run the main script in debug mode using `pdb`. |
 | `make clean` | Clean temporary files, bytecode (`__pycache__`), and cache directories. |
+| `make fclean` | Clean temporary files, and virtualenviroment . |
 | `make lint` | Run static analysis using `flake8 .` and `mypy` with mandatory flags. |
 | `make lint-strict` | Execute strict linting checks (`mypy --strict`). |
+| `make build` | Build standalone PyInstaller executable and create `dist/pacman-linux.zip` for Itch.io.  |
 
 ---
 
@@ -209,6 +255,7 @@ Dedicated hotkeys allow reviewers to easily test game mechanics:
 ### MLX Compliance Rules
 To comply with 42 evaluation rules regarding MiniLibX equivalence:
 - High-level Pygame convenience methods (such as `Rect.collidepoint`) are replaced with pure mathematical boundary checks (`left <= x <= right`).
+- Image transformation modules (`pygame.transform.smoothscale`) are replaced with a custom cached pixel resampling helper (`scale_image`).
 - Rendering relies on image blitting (`screen.blit`), basic geometric primitives, and pre-rendered static sprite atlases.
 
 ---
@@ -506,7 +553,12 @@ All project management evidence, Gantt charts, risk mitigation plans, test plans
 ### References & Documentation
 - [Pac-Man Dossier by Jamey Pittman](https://pacman.holenet.info/) — Detailed arcade mechanics, ghost behavioral logic, and timing specs.
 - [Python 3.10+ Typing Documentation](https://docs.python.org/3/library/typing.html) — Static type hints and mypy practices.
-- [Pygame Community Docs](https://www.pygame.org/docs/) — Windowing and event loop handling.
+- [Pygame Community Documentation](https://www.pygame.org/docs/) — Official Pygame API documentation for display initialization, event handling, and surface blitting.
+- [Red Blob Games: Introduction to A* and BFS Pathfinding](https://www.redblobgames.com/pathfinding/a-star/introduction.html) — Conceptual guide and visual walkthrough of Breadth-First Search algorithms for grid maps.
+- [PyInstaller Manual](https://pyinstaller.org/en/stable/) — Official documentation for bundling Python applications into standalone executables.
+- [PEP 257 — Docstring Conventions](https://peps.python.org/pep-0257/) & [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/) — Official Python code quality and docstring standards.
+- [Maze Generation Algorithms (Wikipedia)](https://en.wikipedia.org/wiki/Maze_generation_algorithm) — Background on Depth-First Search and Prim's algorithm maze generation logic.
+- [Real Python - SOLID Principles of Object-Oriented Design in Python](https://realpython.com/solid-principles-python/) — A comprehensive, Python-specific guide explaining the five SOLID design principles.
 
 ### AI Usage Description
 In accordance with Chapter II (AI Instructions), AI tools (ChatGPT/Claude) were utilized selectively as a learning and productivity aid:
