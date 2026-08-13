@@ -19,7 +19,63 @@
       "height": 15,
       "pacgum": 42,
       "seed": 42,
-      "level_max_time": 120
+      "level_max_time": 150
+    },
+    {
+      "width": 17,
+      "height": 15,
+      "pacgum": 48,
+      "seed": 1847,
+      "level_max_time": 165
+    },
+    {
+      "width": 19,
+      "height": 15,
+      "pacgum": 50,
+      "seed": 7291,
+      "level_max_time": 180
+    },
+    {
+      "width": 21,
+      "height": 15,
+      "pacgum": 58,
+      "level_max_time": 195
+    },
+    {
+      "width": 19,
+      "height": 17,
+      "pacgum": 66,
+      "level_max_time": 210
+    },
+    {
+      "width": 21,
+      "height": 17,
+      "pacgum": 72,
+      "level_max_time": 225
+    },
+    {
+      "width": 17,
+      "height": 19,
+      "pacgum": 82,
+      "level_max_time": 240
+    },
+    {
+      "width": 21,
+      "height": 19,
+      "pacgum": 94,
+      "level_max_time": 255
+    },
+    {
+      "width": 21,
+      "height": 20,
+      "pacgum": 104,
+      "level_max_time": 270
+    },
+    {
+      "width": 21,
+      "height": 21,
+      "pacgum": 116,
+      "level_max_time": 285
     }
   ]
 }
