@@ -488,7 +488,7 @@ The development process followed a structured project management methodology div
 
 All project management evidence, Gantt charts, risk mitigation plans, test plans, and retrospective documents are located in the dedicated repository subdirectory:
 
-📁 **[`/docs/project_management/`](./docs/project_management/)**
+📁 **[`/docs/project_management/`](./docs/)**
 
 ---
 
