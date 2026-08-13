@@ -40,6 +40,28 @@ test-cov:
 	uv run pytest --cov=src --cov-report=term-missing
 
 # --------------------------
+# PACKAGE / BUILD
+# --------------------------
+
+build: package
+
+package:
+	@echo "🚀 Building standalone executable with PyInstaller..."
+	uv run pyinstaller --noconfirm --onefile --windowed \
+		--add-data "assets:assets" \
+		--name "pacman-linux" \
+		pac-man.py
+	@echo "📦 Creating ZIP release archive for Itch.io..."
+	@rm -rf dist/release dist/pacman-linux.zip
+	@mkdir -p dist/release
+	@cp dist/pacman-linux dist/release/
+	@cp config.json dist/release/
+	@cp highscores.json dist/release/
+	@cp README.md dist/release/
+	@cd dist/release && zip -r ../pacman-linux.zip .
+	@echo "✅ Build complete! Archive ready at dist/pacman-linux.zip"
+
+# --------------------------
 # CLEAN
 # --------------------------
 
@@ -77,4 +99,4 @@ lint-strict:
 # PHONY
 # --------------------------
 
-.PHONY: all install run debug fclean clean lint lint-strict test test-cov
+.PHONY: all install run debug fclean clean lint lint-strict test test-cov build package

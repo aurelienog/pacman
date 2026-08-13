@@ -1,6 +1,10 @@
 [project]
 name = "pacman"
 version = "1.0.0"
+authors = [
+    { name="Aurélie Nogueira" },
+    { name="Oleksii Shtohrin" }
+]
 description = "Pac-Man clone developed for the 42 School subject."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -16,6 +20,7 @@ dev = [
     "pytest-cov>=6.0",
     "flake8>=7.1",
     "mypy>=1.11",
+    "pyinstaller>=6.10"
 ]
 
 # Search for .whl files in the project root
