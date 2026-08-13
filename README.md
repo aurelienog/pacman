@@ -10,6 +10,7 @@ A complete, modern, and modular recreation of the classic 1980 Namco arcade game
 ## Table of Contents
 
 - [Description](#description)
+- [Screenshots](#screenshots)
 - [Instructions](#instructions)
 - [Configuration](#configuration)
 - [Highscore System](#highscore-system)
@@ -33,6 +34,14 @@ The goal of this project is to build a fully functional arcade Pac-Man game with
 - **Persistent Highscores**: Top 10 leaderboard saved to disk with player name validation.
 - **Interactive & Responsive UI**: Custom sprite atlases, responsive HUD, mouse & keyboard navigation, and scaled game views.
 - **Cheat Suite**: Built-in developer hotkeys for peer review evaluation.
+
+---
+
+## Screenshots
+
+<img src="assets/screenshots/main_menu.png" alt="Menu" style="max-width: 600px; width: 100%;">
+<img src="assets/screenshots/gameplay.png" alt="Menu" style="max-width: 600px; width: 100%;">
+<img src="assets/screenshots/victory.png" alt="Menu" style="max-width: 600px; width: 100%;">
 
 ---
 
