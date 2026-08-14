@@ -60,7 +60,7 @@ A pre-packaged, standalone Linux executable is available for demonstration and e
 
 1. **Download the Release Archive**:
    Download `pacman-linux.zip` from our Itch.io project page:
-   👉 **[Pac-Man Itch.io Private Release Page](https://itch.io/)** *(Unlisted / Private evaluation build)*
+   👉 **[Pac-Man Itch.io Private Release Page](https://osh-games.itch.io/pacman-42project)** *(Unlisted / Private evaluation build)*
 
 2. **Extract the Package**:
    Unzip the release archive in your terminal:
@@ -309,8 +309,8 @@ src/
 │   ├── highscore_repository.py
 │   └── score_registry.py
 │
-└── ui/
-    ├── pygame_app.py     # Modular presentation layer
+└── ui/                   # Modular presentation layer
+    ├── pygame_app.py
     ├── draw_utils.py     
     ├── input_handler/    
     ├── menu_renderer/    
