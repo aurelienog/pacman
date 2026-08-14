@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 try:
-    from src.adapters import (AmazingMazeFactory,
+    from src.adapters import (AmazingMazeFactory, JsonHighscoreRepository,
                               ConfigLoader, MazeGenerationError)
 except ImportError:
     print("❌ [ERROR] Missing dependency: mazegenerator")
@@ -21,12 +21,23 @@ except ImportError:
     sys.exit(1)
 
 from src.application import GameSession
-from src.adapters import JsonHighscoreRepository
 from src.scores import ScoreRegistry
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Build adapters, validate arguments and launch the application."""
+    """Build adapters, validate arguments, and launch the application.
+
+    Args:
+        argv: Optional command-line arguments excluding the program name.
+            If ``None``, arguments are read from ``sys.argv``.
+
+    Returns:
+        Process exit code. Returns ``0`` when the application exits
+        normally, ``1`` when an unexpected runtime error or maze
+        generation error occurs, and ``2`` when the command-line
+        arguments or configuration path are invalid.
+    """
+
     arguments = sys.argv[1:] if argv is None else argv
     if len(arguments) != 1:
         print("❌ [ERROR] Usage: python3 pac-man.py <config.json>")

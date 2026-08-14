@@ -275,23 +275,35 @@ class ConfigLoader:
 
     @classmethod
     def _normalize_seed(cls, value: object) -> int | None:
-        """Validate an optional seed value.
+        """Validate an optional maze generation seed.
 
         Args:
-            value: Raw seed value.
+            value: Raw seed value from the configuration.
 
         Returns:
-            The validated seed, or None if no seed was provided.
+            A valid seed within the allowed range, or None when the
+            configured value is missing or invalid.
         """
         if value is None:
             return None
 
-        return cls._normalize_int(
-            value,
-            0,
-            *Limits.SEED_RANGE,
-            "seed",
-        )
+        if isinstance(value, bool) or not isinstance(value, int):
+            LOGGER.warning(
+                "'seed' must be an integer. Ignoring invalid seed."
+            )
+            return None
+
+        if not (
+            Limits.SEED_RANGE[0]
+            <= value
+            <= Limits.SEED_RANGE[1]
+        ):
+            LOGGER.warning(
+                "'seed' outside valid range. Ignoring invalid seed."
+            )
+            return None
+
+        return value
 
     @staticmethod
     def _normalize_text(

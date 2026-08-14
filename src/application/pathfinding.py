@@ -172,7 +172,19 @@ def _available_moves(
     ghost: Ghost,
     maze: Maze,
 ) -> list[tuple[Direction, Position]]:
-    """Return the legal movements for a ghost."""
+    """Return legal movements available to a ghost.
+
+    The ghost's reverse direction is excluded when other legal
+    movements are available. If reversing is the only possible
+    movement, it is returned as the fallback.
+
+    Args:
+        ghost: Ghost whose legal movements are being evaluated.
+        maze: Maze containing the ghost.
+
+    Returns:
+        A list of legal direction and destination pairs.
+    """
     moves = maze.neighbours(ghost.position)
 
     non_reverse = [
@@ -207,7 +219,21 @@ def random_walkable(
     maze: Maze,
     random_generator: random.Random,
 ) -> Position:
-    """Return a random walkable position."""
+    """Return a randomly selected traversable position.
+
+    A position is considered traversable when it has at least one
+    accessible neighbouring cell.
+
+    Args:
+        maze: Maze from which to select a position.
+        random_generator: Random number generator used for selection.
+
+    Returns:
+        A randomly selected traversable position.
+
+    Raises:
+        IndexError: If the maze contains no traversable positions.
+    """
 
     walkable = []
 

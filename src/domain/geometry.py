@@ -3,7 +3,18 @@ from enum import Enum
 
 
 class Direction(Enum):
-    """A cardinal movement direction in maze coordinates."""
+    """Represent a cardinal movement direction in maze coordinates.
+
+    Each direction contains its corresponding ``(x, y)`` coordinate
+    delta. ``NONE`` represents no movement.
+
+    Attributes:
+        UP: Movement towards the previous row.
+        DOWN: Movement towards the next row.
+        LEFT: Movement towards the previous column.
+        RIGHT: Movement towards the next column.
+        NONE: No movement.
+    """
 
     UP = (0, -1)
     DOWN = (0, 1)
@@ -13,12 +24,20 @@ class Direction(Enum):
 
     @property
     def delta(self) -> tuple[int, int]:
-        """Return the coordinate delta for this direction."""
+        """Return the coordinate delta for this direction.
+
+        Returns:
+            A tuple containing the ``(x, y)`` coordinate delta.
+        """
         return self.value
 
     @property
     def opposite(self) -> "Direction":
-        """Return the reverse direction."""
+        """Return the opposite direction.
+
+        Returns:
+            The direction representing the reverse movement.
+        """
         return {
             Direction.UP: Direction.DOWN,
             Direction.DOWN: Direction.UP,
@@ -30,20 +49,38 @@ class Direction(Enum):
 
 @dataclass(frozen=True, slots=True)
 class Position:
-    """An immutable cell coordinate."""
+    """Represent an immutable maze-cell coordinate.
+
+    Attributes:
+        x: Horizontal cell coordinate.
+        y: Vertical cell coordinate.
+    """
 
     x: int
     y: int
 
     def moved(self, direction: Direction) -> "Position":
-        """Return the adjacent position in ``direction``."""
+        """Return a new position moved in the given direction.
+
+        The current position is not modified because ``Position`` is
+        immutable.
+
+        Args:
+            direction: Direction in which to move.
+
+        Returns:
+            A new position one cell away in ``direction``.
+        """
         dx, dy = direction.delta
         return Position(self.x + dx, self.y + dy)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Hitbox:
     """Represent the collision bounds of an entity.
+
+    Hitbox dimensions are expressed in maze-cell units and describe
+    the rectangular collision area centred on the entity position.
 
     Attributes:
         width: Width of the hitbox in maze-cell units.

@@ -29,6 +29,7 @@ class MazeFactory(Protocol):
         Returns:
             A validated Maze instance.
         """
+        ...
 
 
 class AmazingMazeFactory:
