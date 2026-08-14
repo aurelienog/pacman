@@ -1,3 +1,7 @@
+# ==============================================================================
+#  🟡 PAC-MAN ARCADE CLONE (42 SCHOOL SUBJECT v1.5)
+# ==============================================================================
+
 # --------------------------
 # DEFAULT
 # --------------------------
@@ -30,14 +34,33 @@ debug:
 	uv run python -m pdb pac-man.py config.json
 
 # --------------------------
-# TEST
+# CLEAN
 # --------------------------
 
-test:
-	uv run pytest
+clean:
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	find . -type d -name ".mypy_cache" -exec rm -rf {} +
+	rm -rf build dist *.spec
 
-test-cov:
-	uv run pytest --cov=src --cov-report=term-missing
+# --------------------------
+# FCLEAN
+# --------------------------
+
+fclean: clean
+	rm -rf .venv
+	@echo "💣 Virtual environment removed"
+
+# --------------------------
+# LINT
+# --------------------------
+
+lint:
+	uv run flake8 src/. pac-man.py
+	uv run mypy src/. pac-man.py --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+
+lint-strict:
+	uv run flake8 src/. pac-man.py
+	uv run mypy src/. pac-man.py --strict
 
 # --------------------------
 # PACKAGE / BUILD
@@ -62,41 +85,7 @@ package:
 	@echo "✅ Build complete! Archive ready at dist/pacman-linux.zip"
 
 # --------------------------
-# CLEAN
-# --------------------------
-
-clean:
-	find . -type d -name "__pycache__" -exec rm -rf {} +
-	find . -type d -name ".mypy_cache" -exec rm -rf {} +
-	find . -type d -name ".pytest_cache" -exec rm -rf {} +
-	find . -type d -name ".ruff_cache" -exec rm -rf {} +
-	find . -type d -name ".coverage" -exec rm -rf {} +
-	rm -f .coverage
-	rm -rf htmlcov
-	rm -rf .coverage.*
-
-# --------------------------
-# FCLEAN
-# --------------------------
-
-fclean: clean
-	rm -rf .venv
-	@echo "💣 Virtual environment removed"
-
-# --------------------------
-# LINT (Requirement 42 Subject Chapter III.2)
-# --------------------------
-
-lint:
-	uv run flake8 src pac-man.py
-	uv run mypy src pac-man.py --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
-
-lint-strict:
-	uv run flake8 src pac-man.py
-	uv run mypy src pac-man.py --strict
-
-# --------------------------
 # PHONY
 # --------------------------
 
-.PHONY: all install run debug fclean clean lint lint-strict test test-cov build package
+.PHONY: all install run debug fclean clean lint lint-strict build package
