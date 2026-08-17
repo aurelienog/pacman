@@ -111,7 +111,7 @@ class GhostsSpriteAtlas:
             row = (ticks // 150) % 2
             frame = atlas[row][col]
 
-        size = max(16, int(cell * 1.2))
+        size = max(16, int(cell * 1.35))
         scaled = scale_image(frame, (size, size), self._pygame)
 
         # We apply height shift adjustment
