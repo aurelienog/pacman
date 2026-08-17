@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from .geometry import Direction, Position, Hitbox
 
 
-PLAYER_HITBOX_SIZE = 0.8
+PLAYER_HITBOX_SIZE = 0.9
 
 
 @dataclass(slots=True)
