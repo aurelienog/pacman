@@ -65,8 +65,8 @@ A pre-packaged, standalone Linux executable is available for demonstration and e
 2. **Extract the Package**:
    Unzip the release archive in your terminal:
    ```bash
-   unzip pacman-linux.zip -d pacman-release
-   cd pacman-linux
+   unzip pacman-linux.zip -d pacman-game
+   cd pacman-game
    ```
 
 3. **Ensure Execution Permissions**:
