@@ -86,7 +86,7 @@ A pre-packaged, standalone Linux executable is available for demonstration and e
 
 1. **Clone the repository**:
    ```bash
-   git clone <repository_url>
+   git clone https://github.com/aurelienog/pacman.git pac-man
    cd pac-man
    ```
 
