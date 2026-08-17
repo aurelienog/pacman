@@ -91,7 +91,7 @@ class PacmanSpriteAtlas:
         row = anim_sequence[(ticks // 90) % 4]
 
         frame = self._frames[row][col]
-        size = max(16, int(cell * 1.2))
+        size = max(16, int(cell * 1.35))
         scaled = scale_image(frame, (size, size), self._pygame)
         screen.blit(scaled, scaled.get_rect(center=center))
 
