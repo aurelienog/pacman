@@ -5,7 +5,7 @@ from enum import Enum, auto
 from .geometry import Position, Direction, Hitbox
 
 
-GHOST_HITBOX_SIZE = 0.8
+GHOST_HITBOX_SIZE = 0.9
 
 
 class GhostPersonality(Enum):
