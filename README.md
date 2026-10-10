@@ -118,6 +118,52 @@ A pre-packaged, standalone Linux executable is available for demonstration and e
 
 ---
 
+### Troubleshooting: Python Version with `uv`
+
+If your system uses Python 3.10 or an older version, you may need to select a compatible Python version for this project. The project requires **Python 3.12 or newer**.
+
+1. **Check available Python versions**:
+
+   ```bash
+   uv python list
+   ```
+
+2. **Install Python 3.12 if needed**:
+
+   ```bash
+   uv python install 3.12
+   ```
+
+   This installs the latest available Python 3.12 patch release managed by `uv`.
+
+3. **Pin the Python version for the project**:
+
+   Run this command from the project root directory:
+
+   ```bash
+   uv python pin 3.12
+   ```
+
+   This creates a `.python-version` file that tells `uv` which Python version to use for the project.
+
+4. **Synchronize the project environment**:
+
+   ```bash
+   uv sync
+   ```
+
+5. **Verify the Python version**:
+
+   ```bash
+   uv run python --version
+   ```
+
+   The output should show Python 3.12.x.
+
+**Note:** You do not need to replace your system Python. `uv` can manage separate Python versions for individual projects. If the project already runs with Python 3.13 or newer, changing the version is unnecessary.
+
+---
+
 ### Makefile Targets
 
 | Command | Description |
